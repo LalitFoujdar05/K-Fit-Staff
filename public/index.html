@@ -1,0 +1,712 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<meta name="theme-color" content="#0E6B5C"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="K-Fit Staff"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>K-Fit Staff</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: phone-first app shell. Sticky top bar, scrolling content, fixed bottom tabs, bottom-sheet editors. */
+:root{
+  --bg:#F2F4F1; --surface:#FFFFFF; --ink:#14201E; --muted:#5A6B66; --line:#DCE3DF;
+  --accent:#0E6B5C; --accent-ink:#FFFFFF; --chip:#E7EDEA;
+  --good:#1B7F4B; --good-bg:#DDF1E5; --warn:#9A5B06; --warn-bg:#FBEBCF; --bad:#B3261E; --bad-bg:#F9DEDB; --info:#245EA6; --info-bg:#DFEAF8;
+  --f-head:'Barlow Condensed','Arial Narrow',sans-serif; --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1614; --surface:#16221F; --ink:#E8F0ED; --muted:#93A6A0; --line:#26352F; --accent:#4FD1B5; --accent-ink:#06231D; --chip:#1F2E2A;
+  --good:#5ED08F; --good-bg:#16372A; --warn:#F0B35A; --warn-bg:#3B2D12; --bad:#FF8D84; --bad-bg:#40201D; --info:#8DB8F0; --info-bg:#172C47; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1614; --surface:#16221F; --ink:#E8F0ED; --muted:#93A6A0; --line:#26352F; --accent:#4FD1B5; --accent-ink:#06231D; --chip:#1F2E2A;
+  --good:#5ED08F; --good-bg:#16372A; --warn:#F0B35A; --warn-bg:#3B2D12; --bad:#FF8D84; --bad-bg:#40201D; --info:#8DB8F0; --info-bg:#172C47; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.35;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:70px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 10px}
+.brand{font-family:var(--f-head);font-weight:700;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.brand small{display:block;font-family:var(--f-body);font-size:12px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+.who{display:flex;align-items:center;gap:8px;min-width:0;text-align:right}
+.who b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:12px;color:var(--muted);text-transform:capitalize}
+.av{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-head);font-weight:700;font-size:17px;flex:none}
+main{flex:1;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:20;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav .in{max-width:640px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:0 max(8px,env(safe-area-inset-left,0px))}
+nav button{padding:11px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--muted);position:relative}
+nav button svg{width:22px;height:22px}
+nav button[aria-current="true"]{color:var(--accent)}
+nav button[aria-current="true"]::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+.badge{position:absolute;top:5px;left:calc(50% + 6px);background:var(--bad);color:#fff;border-radius:9px;min-width:18px;height:18px;font-size:11px;display:grid;place-items:center;padding:0 5px}
+h2{font-family:var(--f-head);font-size:22px;font-weight:700;letter-spacing:.02em;margin:0}
+h3{font-family:var(--f-head);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.metric .lab{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.metric .num{font-family:var(--f-head);font-weight:700;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
+.metric .num small{font-size:18px;color:var(--muted);font-weight:500}
+.bar{height:6px;border-radius:3px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bar i.full{background:var(--good)}
+.plus{width:34px;height:34px;border-radius:10px;background:var(--chip);display:grid;place-items:center;font-size:22px;line-height:1;color:var(--accent);font-weight:600}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-open{background:var(--info-bg);color:var(--info)} .p-won{background:var(--good-bg);color:var(--good)} .p-lost{background:var(--chip);color:var(--muted)} .p-bad{background:var(--bad-bg);color:var(--bad)} .p-warn{background:var(--warn-bg);color:var(--warn)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:7px 13px;border-radius:99px;background:var(--chip);font-weight:600;font-size:13px;color:var(--ink);white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.chip b{font-variant-numeric:tabular-nums;opacity:.75;margin-left:4px;font-weight:600}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left;width:100%}
+.item .t{font-weight:600;font-size:16px;overflow-wrap:anywhere}
+.item .r{color:var(--muted);font-size:13px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.late{color:var(--bad);font-weight:600} .soon{color:var(--warn);font-weight:600}
+.btn{background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:12px 16px;font-weight:600;text-align:center;display:block;width:100%}
+.btn.sec{background:var(--chip);color:var(--ink)} .btn.bad{background:var(--bad-bg);color:var(--bad)}
+.btn[disabled]{opacity:.5}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:13px 18px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line);flex:none;display:inline-block}
+.dot.on{background:var(--good)} .dot.idle{background:#E0A030}
+.tl{display:flex;flex-direction:column}
+.tl .e{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.tl .e:first-child{border-top:0}
+.tl time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;width:54px;flex:none}
+.tl .x{margin-left:auto;color:var(--muted);padding:0 4px;font-size:18px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92%;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.sheet .hd .x{font-size:26px;line-height:1;color:var(--muted);padding:0 6px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--muted)}
+.acts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.acts .chip{text-align:center;padding:11px 8px;border-radius:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;z-index:60;font-weight:600;font-size:14px}
+.login{display:flex;flex-direction:column;gap:12px;padding-top:24px}
+.who-btn{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;width:100%;text-align:left}
+.pin{font-family:var(--f-head);font-size:30px;letter-spacing:.5em;text-align:center}
+.banner{background:var(--warn-bg);color:var(--warn);padding:10px 12px;border-radius:12px;font-weight:600;font-size:13px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;overflow-wrap:anywhere}
+a{color:var(--accent);font-weight:600}
+.mini{display:flex;gap:6px;flex-wrap:wrap}
+.mini span{background:var(--chip);border-radius:8px;padding:4px 8px;font-size:13px;font-variant-numeric:tabular-nums}
+.mini span b{font-weight:700}
+@media(prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}
+</style>
+<div class="app" id="app"></div>
+<div id="layer"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="net.js"></script>
+<script>
+(()=>{
+'use strict';
+const KINDS=[['call','Calls'],['counselling','Counselling'],['whatsapp','WhatsApp leads'],['renewal','Renewal calls'],['walkin','Walk-ins']];
+const VERB={call:'Called',counselling:'Counselled',whatsapp:'WhatsApp chat with',renewal:'Renewal call to',walkin:'Walk-in:',note:'Updated'};
+const LEAD_STATUS=['Walk-in','Visited','Whatsapp Chat','Whatsapp Call','Call','Contacted','Price Issue','Membership Sold','Joined Another Gym','Not Interested','Distance Issue','Number Issue','Blocked','Moved City'];
+const OPEN=new Set(['Walk-in','Visited','Whatsapp Chat','Whatsapp Call','Call','Contacted','Price Issue']);
+const R_STATUS=['Not Contacted','Called - No Answer','Thinking','Interested','Will Renew Soon','Renewed','Not Interested'];
+const OUTCOMES=['Connected','No answer','Busy','Switched off','Wrong number'];
+const REPLIES=[{"q": "“I’m a beginner. Can I join?”", "a": "Of course. You don't need to be experienced to start. Our trainers can help you understand the basics and build your routine gradually."}, {"q": "If someone doesn't answer the call", "a": "Hi! 😊 This is from K-Fit Club.\nYou had enquired through our ad, so we just tried connecting with you.\nWhenever you're free, let us know. We'd be happy to share the details or arrange a quick visit for you!"}, {"q": "Do you charge GST?", "a": "All taxes and charges are clearly shown in the final plan sheet we give you during the visit, so you know the full amount before deciding. Can I book a time for you to see it?"}, {"q": "Is the price negotiable?", "a": "We always try to find the best possible plan for each person. The best offers are explained at the gym, and the sooner you visit, the better we can help. Can I book you in?"}, {"q": "What are your fees?", "a": "Great question! Our plans depend on the duration and what you want to use, so I'd rather give you the exact right number than a vague one. The best way is a quick 15-min visit where we match a plan to your goal. Would today evening or tomorrow morning suit you better?"}, {"q": "If someone visited but didn't join", "a": "Hi! 😊 Thank you for visiting K-Fit Club. Hope you had a good experience exploring the club! Let us know if you have any questions about the membership or need help choosing the right option."}, {"q": "Another gym is cheaper.", "a": "Fair point. Price is one factor; equipment, trainers, hygiene and results matter too. Visit both and compare. Can I show you ours?"}, {"q": "I'm not sure if I'll continue.", "a": "That's okay. Come see how we help members stay consistent. Our plans are explained clearly. When can you visit?"}, {"q": "Please stop calling me.", "a": "Sorry for the trouble, I've noted it and we won't call again. Have a great day."}, {"q": "What is K-Fit Club?", "a": "K-Fit Club is a complete fitness space where you can work on your goals through strength training, cardio, group sessions and guided programs—all under one roof."}, {"q": "Can I try the gym before joining? (trial)", "a": "We'd be happy to help! 😊 Let me check the available trial options for you and get back to you with the details."}, {"q": "Where are you located?", "a": "Opp. Saint Wilfred's Law College.\nHere's the location for the same.\nhttps://share.google/tya2m2aRakCf9WXoK"}];
+const ROLES=['owner','manager','receptionist','trainer'];
+const DEF_T={call:40,counselling:8,whatsapp:20,renewal:15,walkin:0};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ICON={
+ rep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>',
+ team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 010 7M18 14.5c2 .7 3.5 2.4 3.5 5.5"/></svg>',
+ leads:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg>',
+ ren:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-2.6-5.9M20 4v5h-5"/></svg>',
+ more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>'};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>ymd(new Date());
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return ymd(d)};
+const diff=(a,b)=>Math.round((new Date(a+'T00:00:00')-new Date(b+'T00:00:00'))/864e5);
+const fd=iso=>iso?(+iso.slice(8))+' '+MON[+iso.slice(5,7)-1]:'—';
+const hm=ts=>{const d=new Date(ts);return pad(d.getHours())+':'+pad(d.getMinutes())};
+const ago=ts=>{const m=Math.round((Date.now()-ts)/6e4);if(m<1)return 'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' h ago';return Math.round(h/24)+' d ago'};
+const ini=n=>(String(n||'?').replace(/^(Mr|Ms|Mrs)\s+/i,'').trim()[0]||'?').toUpperCase();
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):'';
+const rupee=n=>'₹'+Number(n||0).toLocaleString('en-IN');
+
+const S={db:null,ready:{},staff:{},leads:{},ren:{},acts:[],targets:{...DEF_T},me:null,tab:null,
+  lf:'due',mine:false,q:'',lim:40,rk:'Membership',rf:'todo',rq:'',rlim:40,tdate:today(),sheet:null,loginPick:null,canWrite:true,err:'',isOwner:false,imp:null,dl:null,rng:7,pv:null,offline:false,installEv:null};
+const me=()=>S.staff[S.me];
+const isMgr=()=>{const m=me();return m&&(m.role==='owner'||m.role==='manager')};
+const isOwner=()=>{const m=me();return m&&m.role==='owner'};
+
+function toast(t){const el=document.createElement('div');el.className='toast';el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
+let rt=null;const dirty=()=>{clearTimeout(rt);rt=setTimeout(render,120)};
+
+/* ---------- derived data ---------- */
+function leadMeta(l){const t=today();const open=OPEN.has(l.status);const due=open&&l.next===t;const late=open&&l.next&&l.next<t;return{open,due,late}}
+function renMeta(r){const t=today();const left=diff(r.expiry,t);const done=r.fstatus==='Renewed'||r.fstatus==='Not Interested';return{left,done,todo:!done&&left>=-45&&left<=30}}
+function actsFor(staffId,date){return S.acts.filter(a=>a.staff===staffId&&a.date===date)}
+function count(list){const c={call:0,counselling:0,whatsapp:0,renewal:0,walkin:0,connected:0,sale:0,renewed:0};list.forEach(a=>{if(c[a.kind]!=null)c[a.kind]++;if(a.kind==='call'&&a.outcome==='Connected')c.connected++;if(a.toStatus==='Membership Sold')c.sale++;if(a.toStatus==='Renewed')c.renewed++});return c}
+function describe(a){const who=a.refName?esc(a.refName):'<span class="muted">(not linked to a lead)</span>';return (VERB[a.kind]||a.kind)+' '+who+(a.outcome?' · '+esc(a.outcome):'')+(a.toStatus?' → <b>'+esc(a.toStatus)+'</b>':'')}
+
+/* ---------- views ---------- */
+function render(){
+  if(S.sheet)return renderSheet(true);
+  const app=$('#app');
+  if(S.err){app.innerHTML='<div class="login card"><h2>Cannot open the app</h2><p>'+esc(S.err)+'</p></div>';return}
+  if(!S.ready.staff){app.innerHTML='<div class="login"><h2>K-Fit Club</h2><p class="muted">Loading…</p></div>';return}
+  if(!Object.keys(S.staff).length){renderSetup();return}
+  const m=me();
+  if(!m||!m.active){renderLogin();return}
+  if(!(S.ready.leads&&S.ready.ren&&S.ready.acts)){app.innerHTML='<div class="login"><h2>K-Fit Club</h2><p class="muted">Loading your data…</p></div>';return}
+  const tabs=isMgr()?[['team','Team',ICON.team],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['rep','Reports',ICON.rep],['more','More',ICON.more]]:[['today','Today',ICON.today],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['more','Me',ICON.more]];
+  if(!S.tab||!tabs.some(t=>t[0]===S.tab))S.tab=tabs[0][0];
+  const lateCt=Object.values(S.leads).filter(l=>leadMeta(l).due&&(isMgr()||l.by===m.name)).length;
+  app.innerHTML='<header class="top"><div class="brand">K-Fit Club<small>'+esc(fdLong(today()))+'</small></div><div class="who"><div style="min-width:0"><b>'+esc(m.name)+'</b><span>'+esc(m.role)+'</span></div><div class="av">'+esc(ini(m.name))+'</div></div></header>'
+   +(S.offline?'<div class="banner">No internet. Showing the last data you had. Changes will not save until you are back online.</div>':'')
+   +'<main id="main"></main><nav><div class="in">'+tabs.map(t=>'<button data-a="tab" data-v="'+t[0]+'" aria-current="'+(S.tab===t[0])+'">'+t[2]+t[1]+(t[0]==='leads'&&lateCt?'<span class="badge">'+(lateCt>99?'99+':lateCt)+'</span>':'')+'</button>').join('')+'</div></nav>'
+   +((S.tab==='leads')&&S.canWrite?'<button class="fab" data-a="newlead">+ New lead</button>':'');
+  renderMain();
+}
+function fdLong(iso){const d=new Date(iso+'T00:00:00');return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()}
+function renderMain(){
+  const el=$('#main');if(!el)return;
+  const t=S.tab;
+  if(t==='today')el.innerHTML=viewToday();
+  else if(t==='team')el.innerHTML=viewTeam();
+  else if(t==='rep')el.innerHTML=viewReports();
+  else if(t==='leads'){el.innerHTML=viewLeadsShell();renderLeadList()}
+  else if(t==='ren'){el.innerHTML=viewRenShell();renderRenList()}
+  else el.innerHTML=viewMore();
+}
+function impLine(){const i=S.imp;if(!i)return '';return '<div class="card stack"><div class="bar"><i style="width:'+Math.round(i.done/Math.max(1,i.total)*100)+'%"></i></div><div class="small">'+(i.msg||'')+' '+i.done+' of '+i.total+'</div></div>'}
+function renderSetup(){
+  $('#app').innerHTML='<div class="login"><div class="brand" style="font-size:30px">K-Fit Club<small>Staff app</small></div><div class="card"><b>No staff added yet.</b><p class="muted">The server has no team list. Ask whoever set it up to check the seed file.</p></div></div>';
+}
+function updImp(){const el=document.querySelector('.bar i');const t=document.querySelector('.login .small:last-child,.card .small:last-child');if(el)el.style.width=Math.round(S.imp.done/Math.max(1,S.imp.total)*100)+'%';if(t&&S.imp)t.textContent=S.imp.msg+' '+S.imp.done+' of '+S.imp.total}
+function renderLogin(){
+  const list=Object.values(S.staff).filter(s=>s.active).sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name));
+  const pick=S.staff[S.loginPick];
+  $('#app').innerHTML='<div class="login"><div class="brand" style="font-size:30px">K-Fit Club<small>Staff app</small></div>'
+   +(pick?'<div class="who-btn"><div class="av">'+esc(ini(pick.name))+'</div><div><b>'+esc(pick.name)+'</b><div class="muted small">'+esc(cap(pick.role))+'</div></div></div><label class="f">Enter your 4-digit PIN<input id="pin" class="pin" inputmode="numeric" maxlength="4" autocomplete="off" type="password"></label><div id="pinerr" class="late small" role="alert"></div><button class="btn" data-a="login-submit">Sign in</button><button class="btn sec" data-a="login-back">Back</button>'
+   :(list.length?'<h3>Who are you?</h3>'+list.map(s=>'<button class="who-btn" data-a="login-pick" data-v="'+esc(s.id)+'"><div class="av">'+esc(ini(s.name))+'</div><div><b>'+esc(s.name)+'</b><div class="muted small">'+esc(cap(s.role))+'</div></div></button>').join(''):'<div class="card"><b>No staff added yet.</b><p class="muted">The owner needs to set up the team list first.</p></div>')+'</div>');
+}
+
+function metricCard(k,lab,val,target,withPlus){
+  const pct=target?Math.min(100,Math.round(val/target*100)):0;
+  return '<div class="metric"><div class="row between"><span class="lab">'+lab+'</span>'+(withPlus&&S.canWrite?'<button class="plus" data-a="quick" data-v="'+k+'" aria-label="Add one '+lab+'">+</button>':'')+'</div><div class="num">'+val+(target?'<small> / '+target+'</small>':'')+'</div>'+(target?'<div class="bar"><i class="'+(pct>=100?'full':'')+'" style="width:'+pct+'%"></i></div>':'')+'</div>';
+}
+function viewToday(){
+  const m=me(),t=today();const mine=actsFor(m.id,t);const c=count(mine);
+  const myLeads=Object.values(S.leads).filter(l=>l.by===m.name);
+  const due=myLeads.filter(l=>leadMeta(l).due&&l.next===t).length, late=myLeads.filter(l=>leadMeta(l).late).length;
+  const rTodo=Object.values(S.ren).filter(r=>renMeta(r).todo&&renMeta(r).left<=7).length;
+  const last=mine.slice().sort((a,b)=>b.ts-a.ts)[0];
+  return '<div class="stack"><h2>Hi '+esc(m.name.replace(/^(Mr|Ms)\s+/,''))+', your day so far</h2>'+(last?'<div class="muted small">Last logged '+ago(last.ts)+'</div>':'<div class="muted small">Nothing logged yet today. Tap + after each call or chat.</div>')+'</div>'
+   +'<div class="grid2">'+KINDS.filter(k=>k[0]!=='walkin'||S.targets.walkin||c.walkin).map(k=>metricCard(k[0],k[1],c[k[0]],S.targets[k[0]],true)).join('')+(!(S.targets.walkin||c.walkin)?metricCard('walkin','Walk-ins',c.walkin,0,true):'')+'</div>'
+   +'<div class="card stack"><h3>Your queue</h3>'
+   +'<button class="row between" data-a="go-leads" data-v="due"><span>Follow-ups due today</span><b>'+due+'</b></button>'
+   +'<button class="row between" data-a="go-leads" data-v="overdue"><span>Overdue follow-ups</span><b class="'+(late?'late':'')+'">'+late+'</b></button>'
+   +'<button class="row between" data-a="go-ren"><span>Renewals to call this week</span><b>'+rTodo+'</b></button></div>'
+   +'<div class="card stack"><h3>Today\'s log</h3>'+timeline(mine,true)+'</div>';
+}
+function timeline(list,canDel){
+  if(!list.length)return '<div class="muted">No activity yet.</div>';
+  return '<div class="tl">'+list.slice().sort((a,b)=>b.ts-a.ts).map(a=>'<div class="e"><time>'+hm(a.ts)+'</time><div style="min-width:0;overflow-wrap:anywhere">'+describe(a)+(a.note?'<div class="muted small">'+esc(a.note)+'</div>':'')+'</div>'+(canDel&&S.canWrite?'<button class="x" data-a="del-act" data-v="'+esc(a.id)+'" aria-label="Remove this entry">×</button>':'')+'</div>').join('')+'</div>';
+}
+
+function viewTeam(){
+  const d=S.tdate,t=today();const all=S.acts.filter(a=>a.date===d);const tot=count(all);
+  const staff=Object.values(S.staff).filter(s=>s.active&&s.role!=='owner').sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name));
+  const leads=Object.values(S.leads);
+  const lateAll=leads.filter(l=>leadMeta(l).late).length, dueAll=leads.filter(l=>leadMeta(l).due&&l.next===t).length;
+  const rNot=Object.values(S.ren).filter(r=>renMeta(r).todo&&r.fstatus==='Not Contacted').length;
+  const feed=S.acts.slice().sort((a,b)=>b.ts-a.ts).slice(0,15);
+  return '<div class="row between"><button class="plus" data-a="tdate" data-v="-1" aria-label="Previous day">‹</button><div style="text-align:center"><h2>'+(d===t?'Today':fdLong(d))+'</h2>'+(d===t?'<div class="muted small">'+fdLong(d)+'</div>':'<button class="small" data-a="tdate-today" style="color:var(--accent);font-weight:600">Back to today</button>')+'</div><button class="plus" data-a="tdate" data-v="1" aria-label="Next day" '+(d>=t?'disabled style="opacity:.3"':'')+'>›</button></div>'
+   +'<div class="grid2">'+metricCard('c','Calls',tot.call,0)+metricCard('c','Counselling',tot.counselling,0)+metricCard('c','WhatsApp leads',tot.whatsapp,0)+metricCard('c','Renewal calls',tot.renewal,0)+metricCard('c','Memberships sold',tot.sale,0)+metricCard('c','Renewed',tot.renewed,0)+'</div>'
+   +'<h3>Team</h3>'+(staff.length?staff.map(s=>staffCard(s,d)).join(''):'<div class="card muted">No staff yet.</div>')
+   +'<div class="card stack"><h3>Queue health (all leads)</h3><div class="row between"><span>Follow-ups due today</span><b>'+dueAll+'</b></div><div class="row between"><span>Overdue follow-ups</span><b class="'+(lateAll?'late':'')+'">'+lateAll+'</b></div><div class="row between"><span>Renewals not yet contacted</span><b class="'+(rNot?'late':'')+'">'+rNot+'</b></div></div>'
+   +'<div class="card stack"><h3>Live feed</h3>'+(feed.length?'<div class="tl">'+feed.map(a=>'<div class="e"><time>'+(a.date===t?hm(a.ts):fd(a.date))+'</time><div style="min-width:0;overflow-wrap:anywhere"><b>'+esc((S.staff[a.staff]||{}).name||'?')+'</b> · '+describe(a)+'</div></div>').join('')+'</div>':'<div class="muted">No activity logged yet.</div>')+'</div>';
+}
+function staffCard(s,d){
+  const list=actsFor(s.id,d),c=count(list),last=S.acts.filter(a=>a.staff===s.id).sort((a,b)=>b.ts-a.ts)[0];
+  const mins=last?(Date.now()-last.ts)/6e4:1e9;const st=d===today()&&mins<30?'on':(d===today()&&mins<150?'idle':'');
+  const od=Object.values(S.leads).filter(l=>l.by===s.name&&leadMeta(l).late).length;
+  const T=S.targets;
+  return '<button class="item" data-a="open-staff" data-v="'+esc(s.id)+'"><div class="row between"><div class="row"><div class="av">'+esc(ini(s.name))+'</div><div><div class="t">'+esc(s.name)+'</div><div class="muted small">'+esc(cap(s.role))+'</div></div></div><span class="row small muted"><i class="dot '+st+'"></i>'+(last?ago(last.ts):'no activity')+'</span></div>'
+   +'<div class="r" style="-webkit-line-clamp:1">'+(last?'Last: '+describe(last).replace(/<[^>]+>/g,''):'Nothing logged yet')+'</div>'
+   +'<div class="mini"><span>Calls <b>'+c.call+(T.call?'/'+T.call:'')+'</b></span><span>Counselling <b>'+c.counselling+(T.counselling?'/'+T.counselling:'')+'</b></span><span>WhatsApp <b>'+c.whatsapp+(T.whatsapp?'/'+T.whatsapp:'')+'</b></span><span>Renewals <b>'+c.renewal+(T.renewal?'/'+T.renewal:'')+'</b></span><span>Walk-ins <b>'+c.walkin+'</b></span>'+(od?'<span class="late">Overdue <b>'+od+'</b></span>':'')+'</div></button>';
+}
+
+/* leads */
+const LF=[['due','Due'],['overdue','Overdue'],['open','Open'],['walkin','Walk-ins'],['wa','WhatsApp'],['call','Calls'],['sold','Sold'],['lost','Lost'],['all','All']];
+function leadFilter(l){
+  const f=S.lf,m=leadMeta(l);
+  if(S.mine&&l.by!==(me()||{}).name)return false;
+  switch(f){case'due':return m.due;case'overdue':return m.late;case'open':return m.open;case'walkin':return l.status==='Walk-in'||l.status==='Visited';case'wa':return l.status==='Whatsapp Chat'||l.status==='Whatsapp Call';case'call':return l.status==='Call';case'sold':return l.status==='Membership Sold';case'lost':return !m.open&&l.status!=='Membership Sold';default:return true}
+}
+function viewLeadsShell(){
+  const base=Object.values(S.leads);const saveF=S.lf;
+  const cnt={};LF.forEach(f=>{S.lf=f[0];cnt[f[0]]=base.filter(leadFilter).length});S.lf=saveF;
+  return '<input id="q" placeholder="Search name, phone or remark" value="'+esc(S.q)+'" data-in="q" type="search"><div class="chips">'+LF.map(f=>'<button class="chip" data-a="lf" data-v="'+f[0]+'" aria-pressed="'+(S.lf===f[0])+'">'+f[1]+'<b>'+cnt[f[0]]+'</b></button>').join('')+'</div>'
+   +'<label class="row small" style="gap:8px"><input type="checkbox" id="mine" data-in="mine" '+(S.mine?'checked':'')+' style="width:18px;height:18px"> Only leads assigned to me</label><div id="list" class="stack"></div>';
+}
+function renderLeadList(){
+  const el=$('#list');if(!el)return;const q=S.q.trim().toLowerCase();
+  let arr=Object.values(S.leads).filter(leadFilter);
+  if(q)arr=arr.filter(l=>(l.name+' '+l.phone+' '+(l.remarks||'')).toLowerCase().includes(q));
+  arr.sort((a,b)=>S.lf==='due'||S.lf==='overdue'?(a.next||'').localeCompare(b.next||''):(b.date||'').localeCompare(a.date||'')||b.id.localeCompare(a.id));
+  const shown=arr.slice(0,S.lim);
+  el.innerHTML=(shown.length?shown.map(leadItem).join(''):'<div class="card muted">Nothing here. Try another filter.</div>')+(arr.length>shown.length?'<button class="btn sec" data-a="more-leads">Show more ('+(arr.length-shown.length)+' left)</button>':'');
+}
+function statusPill(s){const o=OPEN.has(s);return '<span class="pill '+(o?'p-open':s==='Membership Sold'?'p-won':'p-lost')+'">'+esc(s)+'</span>'}
+function leadItem(l){
+  const m=leadMeta(l);const nd=l.next?(m.late?'<span class="late">Follow-up '+fd(l.next)+' · '+diff(today(),l.next)+'d late</span>':m.due?'<span class="soon">Follow-up today</span>':'<span>Follow-up '+fd(l.next)+'</span>'):'';
+  return '<button class="item" data-a="open-lead" data-v="'+esc(l.id)+'"><div class="row between"><span class="t">'+esc(l.name)+'</span>'+statusPill(l.status)+'</div><div class="small muted row between"><span>'+esc(l.phone||'No number')+'</span><span>'+(l.by?esc(l.by):'Unassigned')+'</span></div>'+(l.remarks?'<div class="r">'+esc(l.remarks)+'</div>':'')+((l.hist||[]).length?'<div class="small muted">Last: '+esc(l.hist[l.hist.length-1]).slice(0,90)+' · '+l.hist.length+' follow-ups</div>':'')+(m.open&&nd?'<div class="small">'+nd+'</div>':'')+'</button>';
+}
+
+/* renewals */
+const RF=[['todo','To call'],['week','Next 7 days'],['expired','Expired'],['renewed','Renewed'],['lost','Not interested'],['all','All']];
+function renFilter(r){const m=renMeta(r);if(r.kind!==S.rk)return false;switch(S.rf){case'todo':return m.todo;case'week':return !m.done&&m.left>=0&&m.left<=7;case'expired':return !m.done&&m.left<0;case'renewed':return r.fstatus==='Renewed';case'lost':return r.fstatus==='Not Interested';default:return true}}
+function viewRenShell(){
+  const base=Object.values(S.ren);const sv=S.rf;const cnt={};RF.forEach(f=>{S.rf=f[0];cnt[f[0]]=base.filter(renFilter).length});S.rf=sv;
+  const n=k=>base.filter(r=>r.kind===k&&renMeta(r).todo).length;
+  return '<div class="grid2"><button class="chip" style="padding:12px" data-a="rk" data-v="Membership" aria-pressed="'+(S.rk==='Membership')+'">Membership<b>'+n('Membership')+'</b></button><button class="chip" style="padding:12px" data-a="rk" data-v="PT" aria-pressed="'+(S.rk==='PT')+'">Personal training<b>'+n('PT')+'</b></button></div>'
+   +'<div class="chips">'+RF.map(f=>'<button class="chip" data-a="rf" data-v="'+f[0]+'" aria-pressed="'+(S.rf===f[0])+'">'+f[1]+'<b>'+cnt[f[0]]+'</b></button>').join('')+'</div><div id="list" class="stack"></div>';
+}
+function renderRenList(){
+  const el=$('#list');if(!el)return;
+  const arr=Object.values(S.ren).filter(renFilter).sort((a,b)=>Math.abs(renMeta(a).left)-Math.abs(renMeta(b).left));
+  el.innerHTML=arr.length?arr.map(renItem).join(''):'<div class="card muted">Nothing here. Try another filter.</div>';
+}
+function renItem(r){
+  const m=renMeta(r);const when=m.left>=0?(m.left===0?'Expires today':m.left+' days left'):'Expired '+(-m.left)+' d ago';
+  const cls=m.done?'p-lost':m.left<0?'p-bad':m.left<=7?'p-warn':'p-open';
+  return '<button class="item" data-a="open-ren" data-v="'+esc(r.id)+'"><div class="row between"><span class="t">'+esc(r.name)+'</span><span class="pill '+(r.fstatus==='Renewed'?'p-won':'p-lost')+'">'+esc(r.fstatus)+'</span></div><div class="small row between"><span class="pill '+cls+'">'+when+'</span><span class="muted">'+esc(r.plan)+' · ends '+fd(r.expiry)+'</span></div><div class="small muted row between"><span>'+esc(r.phone||'No number')+'</span>'+(r.due?'<span class="late">Due '+rupee(r.due)+'</span>':'<span></span>')+'</div>'+(r.note?'<div class="r">'+esc(r.note)+'</div>':'')+'</button>';
+}
+
+/* more / me */
+function viewMore(){
+  const m=me();const c=count(actsFor(m.id,today()));
+  let h='<div class="stack"><h2>'+(isMgr()?'More':'My activity')+'</h2></div>';
+  if(!isMgr())h+='<div class="card stack"><h3>Today</h3>'+timeline(actsFor(m.id,today()),true)+'</div>';
+  if(isOwner()){
+    const T=S.targets;
+    h+='<div class="card stack"><h3>Daily targets</h3><div class="small muted">Used for progress bars on every staff screen.</div><div class="grid2">'+KINDS.map(k=>'<label class="f">'+k[1]+'<input type="number" min="0" inputmode="numeric" id="t-'+k[0]+'" value="'+(T[k[0]]||0)+'"></label>').join('')+'</div><button class="btn" data-a="save-targets">Save targets</button></div>';
+    h+='<div class="card stack"><div class="row between"><h3>Team & PINs</h3><button class="chip" data-a="staff-new">+ Add</button></div>'+Object.values(S.staff).sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name)).map(s=>'<button class="row between" data-a="staff-edit" data-v="'+esc(s.id)+'"><span class="row"><div class="av">'+esc(ini(s.name))+'</div><span style="text-align:left"><b>'+esc(s.name)+'</b><br><span class="muted small">'+esc(cap(s.role))+(s.active?'':' · inactive')+'</span></span></span><span class="muted">Edit ›</span></button>').join('')+'</div>';
+  }
+  if(isMgr())h+='<div class="card stack"><h3>Excel / Google Sheet data</h3><div class="small muted">Download everything in the same columns as your sheet, or add new rows from a sheet. In Google Sheets use File, Download, Microsoft Excel (.xlsx), then pick the file here.</div>'+(S.dl?'<button class="btn" data-a="xl-all">Download all data (Excel)</button>':'')+'<label class="btn sec" style="cursor:pointer">Import from Excel or CSV<input type="file" id="imp-file" accept=".xlsx,.xls,.csv" hidden></label>'+previewCard()+impLine()+'</div>';
+  if(!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)&&!navigator.standalone)h+='<div class="card stack"><h3>Put this app on your phone</h3>'+(S.installEv?'<button class="btn" data-a="install">Install K-Fit Staff</button>':'<div class="small"><b>Android:</b> open in Chrome, tap the ⋮ menu, then Install app (or Add to Home screen).<br><b>iPhone:</b> open in Safari, tap Share, then Add to Home Screen.</div>')+'</div>';
+  h+='<button class="btn sec" data-a="logout">Switch user / sign out</button>';
+  return h;
+}
+
+
+/* ---------- reports ---------- */
+function viewReports(){
+  const t=today(),n=S.rng,from=addDays(t,-(n-1));
+  const acts=S.acts.filter(a=>a.date>=from&&a.date<=t);
+  const staff=Object.values(S.staff).filter(x=>x.active&&x.role!=='owner').sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name));
+  const rows=staff.map(x=>({s:x,c:count(acts.filter(a=>a.staff===x.id))}));
+  const tot=count(acts);
+  const leads=Object.values(S.leads);
+  const todayLeads=leads.filter(l=>l.date===t);
+  const sc={};leads.forEach(l=>{sc[l.status]=(sc[l.status]||0)+1});
+  const stArr=Object.entries(sc).sort((a,b)=>b[1]-a[1]);const mx=stArr.length?stArr[0][1]:1;
+  const sold=sc['Membership Sold']||0,openN=leads.filter(l=>OPEN.has(l.status)).length;
+  const ren=Object.values(S.ren);
+  const rn=k=>{const x=ren.filter(r=>r.kind===k);return{soon:x.filter(r=>{const m=renMeta(r);return !m.done&&m.left>=0&&m.left<=7}).length,exp:x.filter(r=>{const m=renMeta(r);return !m.done&&m.left<0&&m.left>=-45}).length,done:x.filter(r=>r.fstatus==='Renewed').length,due:x.filter(r=>!renMeta(r).done).reduce((a,r)=>a+(Number(r.due)||0),0)}};
+  const M=rn('Membership'),P=rn('PT');
+  const th='style="text-align:right;padding:6px 8px;font-size:12px;color:var(--muted);white-space:nowrap"',td='style="text-align:right;padding:8px;font-variant-numeric:tabular-nums"';
+  return '<div class="stack"><h2>Reports</h2><div class="chips">'+[[1,'Today'],[7,'Last 7 days'],[30,'Last 30 days']].map(r=>'<button class="chip" data-a="rng" data-v="'+r[0]+'" aria-pressed="'+(S.rng===r[0])+'">'+r[1]+'</button>').join('')+'</div></div>'
+   +'<div class="card stack"><h3>Staff activity</h3><div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:430px"><thead><tr><th style="text-align:left;padding:6px 8px;font-size:12px;color:var(--muted)">Name</th><th '+th+'>Calls</th><th '+th+'>Counsel</th><th '+th+'>WhatsApp</th><th '+th+'>Renewal</th><th '+th+'>Walk-in</th><th '+th+'>Sold</th></tr></thead><tbody>'
+   +rows.map(r=>'<tr style="border-top:1px solid var(--line)"><td style="padding:8px;white-space:nowrap"><b>'+esc(r.s.name)+'</b><div class="muted small">'+cap(r.s.role)+'</div></td><td '+td+'>'+r.c.call+'</td><td '+td+'>'+r.c.counselling+'</td><td '+td+'>'+r.c.whatsapp+'</td><td '+td+'>'+r.c.renewal+'</td><td '+td+'>'+r.c.walkin+'</td><td '+td+'>'+r.c.sale+'</td></tr>').join('')
+   +'<tr style="border-top:2px solid var(--line);font-weight:700"><td style="padding:8px">Total</td><td '+td+'>'+tot.call+'</td><td '+td+'>'+tot.counselling+'</td><td '+td+'>'+tot.whatsapp+'</td><td '+td+'>'+tot.renewal+'</td><td '+td+'>'+tot.walkin+'</td><td '+td+'>'+tot.sale+'</td></tr></tbody></table></div></div>'
+   +'<div class="card stack"><h3>Leads today</h3><div class="row between"><span>New leads</span><b>'+todayLeads.length+'</b></div><div class="row between"><span>Walk-ins</span><b>'+todayLeads.filter(l=>l.status==='Walk-in').length+'</b></div><div class="row between"><span>WhatsApp chat or call</span><b>'+todayLeads.filter(l=>/^Whatsapp/.test(l.status)).length+'</b></div><div class="row between"><span>Phone calls</span><b>'+todayLeads.filter(l=>l.status==='Call').length+'</b></div></div>'
+   +'<div class="card stack"><h3>All leads · '+leads.length+'</h3><div class="row between"><span>Open (still to convert)</span><b>'+openN+'</b></div><div class="row between"><span>Memberships sold</span><b>'+sold+' <span class="muted small">('+(leads.length?Math.round(sold/leads.length*100):0)+'%)</span></b></div>'
+   +stArr.map(x=>'<div class="stack" style="gap:3px"><div class="row between small"><span>'+esc(x[0])+'</span><b>'+x[1]+'</b></div><div class="bar"><i class="'+(x[0]==='Membership Sold'?'full':'')+'" style="width:'+Math.round(x[1]/mx*100)+'%"></i></div></div>').join('')+'</div>'
+   +'<div class="card stack"><h3>Leads by staff</h3>'+staff.map(x=>{const mine=leads.filter(l=>l.by===x.name);return '<div class="row between small"><span><b>'+esc(x.name)+'</b></span><span class="muted">'+mine.length+' assigned · '+mine.filter(l=>OPEN.has(l.status)).length+' open · '+mine.filter(l=>l.status==='Membership Sold').length+' sold · <span class="'+(mine.filter(l=>leadMeta(l).late).length?'late':'')+'">'+mine.filter(l=>leadMeta(l).late).length+' overdue</span></span></div>'}).join('')+'<div class="row between small"><span><b>Unassigned</b></span><span class="muted">'+leads.filter(l=>!l.by).length+' leads</span></div></div>'
+   +(S.dl?'<button class="btn sec" data-a="xl-act">Download staff activity (Excel)</button>':'')+'<div class="card stack"><h3>Renewals</h3><dl class="kv"><dt></dt><dd><b>Membership</b> · <b>PT</b></dd><dt>Expiring in 7 days</dt><dd>'+M.soon+' · '+P.soon+'</dd><dt>Expired, not renewed</dt><dd><span class="'+(M.exp?'late':'')+'">'+M.exp+'</span> · '+P.exp+'</dd><dt>Renewed</dt><dd>'+M.done+' · '+P.done+'</dd><dt>Balance still due</dt><dd>'+rupee(M.due)+' · '+rupee(P.due)+'</dd></dl></div>';
+}
+
+/* ---------- bulk write, export, import ---------- */
+async function writeMany(items,msg){
+  S.imp={running:true,done:0,total:items.length,msg};render();
+  let fails=0;
+  for(let i=0;i<items.length;i+=300){
+    const chunk=items.slice(i,i+300);let ok=false;
+    for(let t=0;t<3&&!ok;t++){try{const r=await KNet.bulk(chunk.map(x=>[x[2]==='update'?'update':'set',x[0],x[1]]));fails+=r.failed.length;ok=true}catch(e){await new Promise(r=>setTimeout(r,800*(t+1)))}}
+    if(!ok)fails+=chunk.length;S.imp.done=Math.min(items.length,i+300);updImp();
+  }
+  await KNet.pull();
+  S.imp={running:false,done:items.length,total:items.length,msg:fails?fails+' records failed. Try again.':'Done.'};
+  toast(fails?'Finished with errors':'Saved to the app');render();
+}
+const dt=iso=>iso?new Date(iso+'T12:00:00'):'';
+async function saveXlsx(wb,name){
+  if(!S.dl||!window.XLSX){toast('Excel export is not available here');return}
+  try{const out=XLSX.write(wb,{type:'array',bookType:'xlsx',cellDates:true});await S.dl.save({filename:name,data:new Blob([out],{type:'application/octet-stream'})});toast('File ready')}catch(e){if(!e||e.code!=='declined')toast('Could not create the file')}
+}
+function sheetOf(head,rows,widths){const ws=XLSX.utils.aoa_to_sheet([head].concat(rows),{cellDates:true});ws['!cols']=widths.map(w=>({wch:w}));return ws}
+function leadRows(){return Object.values(S.leads).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(l=>{const h=l.hist||[];return [l.id,dt(l.date),l.name,l.phone,l.plan,l.status,dt(l.next),l.by,l.remarks,h[0]||'',h[1]||'',h[2]||'',h[3]||'',h[4]||'',h[5]||'',l.date?diff(today(),l.date):'']})}
+const LHEAD=['Lead ID','Lead Date','Name','Phone Number','Membership Plan','Lead Status','Next Follow-up','Assigned To','Remarks','1st Followup','2nd Followup','3rd Followup','4th Followup','5th Followup','6th Followup','Days since enquiry'];
+function renRows(k){return Object.values(S.ren).filter(r=>r.kind===k).sort((a,b)=>(a.expiry||'').localeCompare(b.expiry||'')).map(r=>[r.id,r.name,r.phone,r.plan,dt(r.start),dt(r.expiry),r.amount,r.paid,r.due,diff(r.expiry,today()),r.fstatus,r.priority,r.note,dt(r.next),r.offer||'',r.renewAmount||'',r.by||''])}
+const RHEAD=['ID','Name','Contact','Plan','Start Date','Expiry Date','Amount','Paid','Due','Days Left','Follow-up Status','Priority','Note Remark','Next Follow-up','Renewal Plan Offered','Renewal Amount','Assigned To'];
+function actRows(list){return list.map(a=>{const st=S.staff[a.staff]||{};return [dt(a.date),hm(a.ts),st.name||'',cap(st.role||''),(KINDS.find(k=>k[0]===a.kind)||[0,a.kind])[1],a.outcome,a.refName,a.toStatus,a.note]})}
+const AHEAD=['Date','Time','Staff','Role','Type','Result','Person','Status changed to','Note'];
+async function exportAll(){
+  if(!window.XLSX)return toast('Excel tools did not load. Check your internet.');
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,sheetOf(LHEAD,leadRows(),[9,12,22,14,12,18,14,12,40,28,28,28,28,28,28,10]),'Leads');
+  XLSX.utils.book_append_sheet(wb,sheetOf(RHEAD,renRows('Membership'),[7,22,14,10,12,12,9,9,9,9,18,9,40,12,20,12,12]),'Expiring');
+  XLSX.utils.book_append_sheet(wb,sheetOf(RHEAD,renRows('PT'),[7,22,14,10,12,12,9,9,9,9,18,9,40,12,20,12,12]),'Pt Expiring');
+  XLSX.utils.book_append_sheet(wb,sheetOf(AHEAD,actRows(await KNet.activity('0000').catch(()=>S.acts)),[12,8,14,12,16,14,22,18,40]),'Staff Activity');
+  await saveXlsx(wb,'K-Fit-data-'+today()+'.xlsx');
+}
+async function exportActivity(){
+  if(!window.XLSX)return toast('Excel tools did not load. Check your internet.');
+  const from=addDays(today(),-(S.rng-1));const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,sheetOf(AHEAD,actRows(await KNet.activity(from).catch(()=>S.acts.filter(a=>a.date>=from))),[12,8,14,12,16,14,22,18,40]),'Staff Activity');
+  await saveXlsx(wb,'K-Fit-staff-activity-'+from+'-to-'+today()+'.xlsx');
+}
+
+/* import from Excel / CSV */
+function normStatus(v){const x=String(v||'').trim().toLowerCase();const m={'walk-in':'Walk-in','membership sold':'Membership Sold','price issue':'Price Issue','whatsapp chat':'Whatsapp Chat','whatsapp':'Whatsapp Chat','whatsapp call':'Whatsapp Call','joined another gym':'Joined Another Gym','call':'Call','not intrested':'Not Interested','not interested':'Not Interested','number issue':'Number Issue','blocked':'Blocked','block':'Blocked','contacted':'Contacted','visited':'Visited','distance issue':'Distance Issue','shifted another city':'Moved City','moved city':'Moved City','enquiry ki thi':'Contacted'};return m[x]||'Contacted'}
+function normR(v){const x=String(v||'').trim().toLowerCase();return R_STATUS.find(r=>r.toLowerCase()===x)||'Not Contacted'}
+function toIso(v){
+  if(v==null||v==='')return '';
+  if(v instanceof Date){if(isNaN(v))return '';const d=new Date(v.getTime()+12*36e5);const y=d.getFullYear();return y>=2020&&y<=2030?ymd(d):''}
+  if(typeof v==='number'){const d=new Date(Math.round((v-25569)*864e5));const y=d.getUTCFullYear();return y>=2020&&y<=2030?y+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()):''}
+  const q=String(v).trim();let m=q.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]);
+  m=q.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);if(m){const y=m[3].length===2?'20'+m[3]:m[3];return y+'-'+pad(+m[2])+'-'+pad(+m[1])}return '';
+}
+const toPhone=v=>{if(v==null||v==='')return '';const d=String(typeof v==='number'?Math.round(v):v).replace(/\D/g,'');return d.length>=10?d.slice(-10):''};
+const txt=v=>v==null?'':String(v).replace(/\s+/g,' ').trim();
+function parseSheet(rows,sheetName){
+  let hi=-1;for(let i=0;i<Math.min(rows.length,8);i++){const r=rows[i].map(x=>txt(x).toLowerCase());if(r.includes('name')&&(r.includes('phone number')||r.includes('contact'))){hi=i;break}}
+  if(hi<0)return null;
+  const head=rows[hi].map(x=>txt(x).toLowerCase());const ix=n=>head.indexOf(n);
+  const body=rows.slice(hi+1);
+  if(head.includes('lead status')){
+    const fcols=[];head.forEach((h,i)=>{const m=h.match(/^([1-6])\w{0,2}\s*follow-?\s*up$/);if(m)fcols.push([+m[1],i])});
+    const out=[];
+    body.forEach(r=>{const name=txt(r[ix('name')]);const phone=toPhone(r[ix('phone number')]);if(!name&&!phone)return;
+      const hist=fcols.sort((a,b)=>a[0]-b[0]).map(c=>txt(r[c[1]])).filter(Boolean);
+      out.push({id:txt(r[0]),date:toIso(r[ix('lead date')]),name:name||'Unknown',phone,plan:(p=>/^none$/i.test(p)?'':p)(txt(r[ix('membership plan')])),status:normStatus(r[ix('lead status')]),next:toIso(r[ix('next follow-up')]),by:txt(r[ix('assigned to')]),remarks:txt(r[ix('remarks')]).slice(0,300),hist})});
+    return{type:'leads',rows:out};
+  }
+  if(head.includes('expiry date')){
+    const kind=/pt/i.test(sheetName)?'PT':'Membership';const out=[];
+    body.forEach(r=>{const name=txt(r[ix('name')]);const exp=toIso(r[ix('expiry date')]);if(!name||!exp)return;
+      const note=ix('note remark')>=0?ix('note remark'):head.findIndex(h=>h.startsWith('note'));
+      out.push({id:txt(r[0]),kind,name,phone:toPhone(r[ix('contact')]),plan:txt(r[ix('plan')]),start:toIso(r[ix('start date')]),expiry:exp,amount:Number(r[ix('amount')])||0,paid:Number(r[ix('paid')])||0,due:Number(r[ix('due')])||0,fstatus:normR(r[ix('follow-up status')]),priority:txt(r[ix('priority')]),note:txt(note>=0?r[note]:'').slice(0,300),by:txt(r[ix('assigned to')])})});
+    return{type:'ren',rows:out};
+  }
+  return null;
+}
+async function readImportFile(file){
+  if(!window.XLSX){toast('Excel tools did not load. Check your internet.');return}
+  try{
+    const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+    const pv={file:file.name,newL:[],updL:[],newR:[],updR:[],skipped:0,upd:false};
+    const seenEx=new Set();const phoneIdx={};Object.values(S.leads).forEach(l=>{if(l.phone)phoneIdx[l.phone]=l});
+    wb.SheetNames.forEach(nm=>{
+      const p=parseSheet(XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,raw:true,defval:''}),nm);if(!p)return;
+      if(p.type==='leads')p.rows.forEach(r=>{
+        const ex=(r.id&&S.leads[r.id])||(r.phone&&phoneIdx[r.phone]);
+        if(ex){if(!seenEx.has(ex.id)&&ex.id){seenEx.add(ex.id);pv.updL.push([ex,r])}}else{const id=/^[A-Za-z]+-\d+$/.test(r.id)&&!S.leads[r.id]?r.id:newId('X');pv.newL.push([id,Object.assign({},r,{id,date:r.date||today(),lastTouch:Date.now(),lastBy:'Import'})]);if(r.phone)phoneIdx[r.phone]={}}
+      });
+      else p.rows.forEach(r=>{
+        const pre=r.kind==='PT'?'P':'M';const id=/^\d+$/.test(r.id)?pre+'-'+r.id:'';
+        const ex=(id&&S.ren[id])||Object.values(S.ren).find(x=>x.kind===r.kind&&x.phone===r.phone&&x.expiry===r.expiry);
+        if(ex){if(!seenEx.has(ex.id)){seenEx.add(ex.id);pv.updR.push([ex,r])}}else pv.newR.push([id&&!S.ren[id]?id:newId(pre),Object.assign({},r,{id:id&&!S.ren[id]?id:'',by:r.by||''})]);
+      });
+    });
+    pv.newR.forEach(x=>{x[1].id=x[0]});
+    if(!pv.newL.length&&!pv.updL.length&&!pv.newR.length&&!pv.updR.length){toast('No leads or renewals found. Use the sheet headers from your Excel.');return}
+    S.pv=pv;renderMain();
+  }catch(e){console.error(e);toast('Could not read that file')}
+}
+function diffFields(old,nw,keys){const u={};keys.forEach(k=>{const v=nw[k];if(v==null||v===''||(Array.isArray(v)&&!v.length))return;if(JSON.stringify(v)!==JSON.stringify(old[k]||(Array.isArray(v)?[]:'')))u[k]=v});return u}
+async function applyPreview(){
+  const pv=S.pv;if(!pv)return;const items=[];
+  pv.newL.forEach(([id,d])=>items.push(['leads/'+id,d,'set']));
+  pv.newR.forEach(([id,d])=>items.push(['renewals/'+id,d,'set']));
+  if(pv.upd){
+    pv.updL.forEach(([ex,r])=>{const u=diffFields(ex,r,['name','phone','plan','status','next','by','remarks','hist']);if(Object.keys(u).length)items.push(['leads/'+ex.id,u,'update'])});
+    pv.updR.forEach(([ex,r])=>{const u=diffFields(ex,r,['plan','start','expiry','amount','paid','due','fstatus','priority','note','by']);if(Object.keys(u).length)items.push(['renewals/'+ex.id,u,'update'])});
+  }
+  S.pv=null;if(!items.length){toast('Nothing new to save');renderMain();return}
+  await writeMany(items,'Saving…');
+}
+function previewCard(){
+  const p=S.pv;if(!p)return '';
+  return '<div class="card stack"><b>'+esc(p.file)+'</b><div class="small">New leads <b>'+p.newL.length+'</b> · already in app <b>'+p.updL.length+'</b><br>New renewals <b>'+p.newR.length+'</b> · already in app <b>'+p.updR.length+'</b></div><label class="row small" style="gap:8px"><input type="checkbox" data-in="pv-upd" '+(p.upd?'checked':'')+' style="width:18px;height:18px"> Also update the '+(p.updL.length+p.updR.length)+' existing records with the sheet’s values</label><button class="btn" data-a="pv-apply">Add to the app</button><button class="btn sec" data-a="pv-clear">Cancel</button></div>';
+}
+
+/* ---------- sheets ---------- */
+function openSheet(s){S.sheet=s;renderSheet()}
+function closeSheet(){S.sheet=null;$('#layer').innerHTML='';render()}
+function chipRow(items,sel,act){return '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+items.map(i=>'<button class="chip" data-a="'+act+'" data-v="'+esc(i)+'" aria-pressed="'+(sel===i)+'">'+esc(i)+'</button>').join('')+'</div>'}
+function renderSheet(fromRender){
+  const s=S.sheet;if(!s)return;
+  const lay=$('#layer');const keep=lay.querySelector('.sheet');const sc=keep?keep.scrollTop:0;
+  if(fromRender&&keep&&!s.refresh)return;
+  s.refresh=false;
+  let body='';
+  if(s.type==='lead')body=sheetLead(s);else if(s.type==='ren')body=sheetRen(s);else if(s.type==='newlead')body=sheetNew(s);else if(s.type==='staffday')body=sheetStaffDay(s);else if(s.type==='staffedit')body=sheetStaffEdit(s);
+  lay.innerHTML='<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">'+body+'</div></div>';
+  const n=lay.querySelector('.sheet');if(n)n.scrollTop=sc;
+}
+const sheetHd=(title,sub)=>'<div class="hd"><div style="min-width:0"><h2 style="overflow-wrap:anywhere">'+esc(title)+'</h2>'+(sub||'')+'</div><button class="x" data-a="close-sheet" aria-label="Close">×</button></div>';
+function contactRow(p){
+  if(!p)return '<div class="muted small">No valid phone number on file</div>';
+  return '<div class="row between"><span style="font-variant-numeric:tabular-nums;font-weight:600">'+esc(p)+'</span><span class="row" style="gap:14px"><a href="tel:'+esc(p)+'" data-act="call">Call</a><a href="https://wa.me/91'+esc(p)+'" target="_blank" rel="noopener" data-act="whatsapp">WhatsApp</a><button data-a="copy" data-v="'+esc(p)+'" style="color:var(--accent);font-weight:600">Copy</button></span></div>';
+}
+function staffNames(){return Object.values(S.staff).filter(x=>x.active&&x.role!=='owner').map(x=>x.name).sort()}
+function selBy(cur,id){const n=staffNames();if(cur&&!n.includes(cur))n.push(cur);return '<select id="'+id+'" data-in="'+id+'"><option value="">Unassigned</option>'+n.map(x=>'<option '+(x===cur?'selected':'')+'>'+esc(x)+'</option>').join('')+'</select>'}
+function sheetLead(s){
+  const l=S.leads[s.id];if(!l)return sheetHd('Lead removed');const d=s.d,e=d.e;
+  const acts=[['call','Call made'],['counselling','Counselling done'],['whatsapp','WhatsApp handled'],['walkin','Walk-in visit']];
+  const nexts=[['Tomorrow',1],['In 3 days',3],['In 1 week',7],['In 1 month',30]];
+  const h=l.hist||[];const rp=REPLIES[d.reply];
+  return sheetHd(l.name,'<div class="row" style="margin-top:4px;flex-wrap:wrap">'+statusPill(l.status)+'<span class="muted small">'+esc(l.by||'Unassigned')+'</span></div>')
+   +'<div class="card stack">'+contactRow(l.phone)+'<dl class="kv"><dt>Lead ID</dt><dd>'+esc(l.id)+'</dd><dt>Enquiry</dt><dd>'+fd(l.date)+(l.date?' · '+diff(today(),l.date)+' days ago':'')+'</dd><dt>Plan</dt><dd>'+esc(l.plan||'—')+'</dd><dt>Next follow-up</dt><dd>'+fd(l.next)+'</dd><dt>Follow-ups</dt><dd>'+h.length+' on record'+(l.lastTouch?' · last by '+esc(l.lastBy||'')+' '+ago(l.lastTouch):'')+'</dd><dt>Remark</dt><dd>'+esc(l.remarks||'—')+'</dd></dl></div>'
+   +(h.length?'<div class="card stack"><h3>Follow-up history</h3>'+h.map((x,i)=>'<div class="small"><span class="muted">'+(i+1)+'.</span> '+esc(x)+'</div>').join('')+'</div>':'')
+   +'<label class="f">What did you do?</label><div class="acts" style="margin-top:-8px">'+acts.map(a=>'<button class="chip" data-a="d-action" data-v="'+a[0]+'" aria-pressed="'+(d.action===a[0])+'">'+a[1]+'</button>').join('')+'</div>'
+   +(d.action==='call'?'<label class="f">Call result</label>'+chipRow(OUTCOMES,d.outcome,'d-outcome'):'')
+   +'<label class="f">Lead status</label>'+chipRow(LEAD_STATUS,d.status,'d-status')
+   +'<label class="f">Next follow-up'+(d.next?': '+fd(d.next):'')+'</label><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+nexts.map(n=>'<button class="chip" data-a="d-next" data-v="'+addDays(today(),n[1])+'" aria-pressed="'+(d.next===addDays(today(),n[1]))+'">'+n[0]+'</button>').join('')+'</div><input type="date" id="d-nextdate" data-in="d-nextdate" value="'+esc(d.next||'')+'">'
+   +'<label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="What did they say?">'+esc(d.note||'')+'</textarea></label>'
+   +'<button class="btn" data-a="save-lead" '+(S.canWrite?'':'disabled')+'>Save update</button>'
+   +'<div class="card stack"><h3>Quick replies</h3><select id="r-pick" data-in="r-pick"><option value="">Choose a ready message…</option>'+REPLIES.map((r,i)=>'<option value="'+i+'" '+(String(d.reply)===String(i)?'selected':'')+'>'+esc(r.q)+'</option>').join('')+'</select>'
+   +(rp?'<div class="small" style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(rp.a)+'</div><div class="row" style="gap:14px"><button data-a="copy-text" data-v="'+d.reply+'" style="color:var(--accent);font-weight:600">Copy message</button>'+(l.phone?'<a href="https://wa.me/91'+esc(l.phone)+'?text='+encodeURIComponent(rp.a)+'" target="_blank" rel="noopener" data-act="whatsapp">Send on WhatsApp</a>':'')+'</div>':'')+'</div>'
+   +'<details class="card"><summary style="font-weight:600">Edit details</summary><div class="stack" style="margin-top:10px"><label class="f">Name<input id="e-name" data-in="e-name" value="'+esc(e.name)+'"></label><label class="f">Phone<input id="e-phone" data-in="e-phone" inputmode="numeric" maxlength="10" value="'+esc(e.phone)+'"></label><label class="f">Plan<input id="e-plan" data-in="e-plan" value="'+esc(e.plan)+'" placeholder="e.g. 3 Months"></label><label class="f">Assigned to'+selBy(e.by,'e-by')+'</label><label class="f">Remark<textarea id="e-remarks" data-in="e-remarks">'+esc(e.remarks)+'</textarea></label><div class="small muted">Tap “Save update” to keep the changes.</div></div></details>';
+}
+function sheetRen(s){
+  const r=S.ren[s.id];if(!r)return sheetHd('Record removed');const d=s.d,e=d.e;const m=renMeta(r);
+  return sheetHd(r.name,'<div class="row" style="margin-top:4px;flex-wrap:wrap"><span class="pill p-open">'+(r.kind==='PT'?'Personal training':'Membership')+'</span><span class="muted small">'+(m.left>=0?m.left+' days left':'expired '+(-m.left)+' d ago')+'</span>'+(r.priority?'<span class="pill p-warn">'+esc(r.priority)+'</span>':'')+'</div>')
+   +'<div class="card stack">'+contactRow(r.phone)+'<dl class="kv"><dt>Plan</dt><dd>'+esc(r.plan||'—')+'</dd><dt>Period</dt><dd>'+fd(r.start)+' to '+fd(r.expiry)+'</dd><dt>Amount</dt><dd>'+rupee(r.amount)+' · paid '+rupee(r.paid)+(r.due?' · <span class="late">due '+rupee(r.due)+'</span>':'')+'</dd><dt>Status</dt><dd>'+esc(r.fstatus)+'</dd><dt>Offered</dt><dd>'+esc(r.offer||'—')+(r.renewAmount?' · '+rupee(r.renewAmount):'')+'</dd><dt>Next follow-up</dt><dd>'+fd(r.next)+'</dd><dt>Assigned</dt><dd>'+esc(r.by||'—')+'</dd><dt>Notes</dt><dd style="white-space:pre-wrap">'+esc((r.note||'—').split(' | ').join('\n'))+'</dd></dl></div>'
+   +'<label class="f">What did you do?</label><div class="acts" style="margin-top:-8px"><button class="chip" data-a="d-action" data-v="renewal" aria-pressed="'+(d.action==='renewal')+'">Renewal call made</button><button class="chip" data-a="d-action" data-v="counselling" aria-pressed="'+(d.action==='counselling')+'">Met in person</button></div>'
+   +(d.action==='renewal'?'<label class="f">Call result</label>'+chipRow(OUTCOMES,d.outcome,'d-outcome'):'')
+   +'<label class="f">Renewal status</label>'+chipRow(R_STATUS,d.status,'d-status')
+   +(d.status==='Renewed'?'<label class="f">Renewal amount (₹)<input type="number" inputmode="numeric" id="d-amt" data-in="d-amt" value="'+esc(d.amt||'')+'"></label>':'')
+   +'<label class="f">Next follow-up<input type="date" id="e-next" data-in="e-next" value="'+esc(e.next||'')+'"></label><label class="f">Plan offered<input id="e-offer" data-in="e-offer" value="'+esc(e.offer||'')+'" placeholder="e.g. 6 months, 12k"></label>'
+   +'<label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="What did they say?">'+esc(d.note||'')+'</textarea></label>'
+   +'<button class="btn" data-a="save-ren" '+(S.canWrite?'':'disabled')+'>Save update</button>'
+   +'<details class="card"><summary style="font-weight:600">Edit membership details</summary><div class="stack" style="margin-top:10px"><label class="f">Plan<input id="e-plan" data-in="e-plan" value="'+esc(e.plan)+'"></label><label class="f">Expiry date<input type="date" id="e-expiry" data-in="e-expiry" value="'+esc(e.expiry)+'"></label><div class="grid2"><label class="f">Amount (₹)<input type="number" id="e-amount" data-in="e-amount" inputmode="numeric" value="'+esc(e.amount)+'"></label><label class="f">Paid (₹)<input type="number" id="e-paid" data-in="e-paid" inputmode="numeric" value="'+esc(e.paid)+'"></label></div><label class="f">Assigned to'+selBy(e.by,'e-by')+'</label><div class="small muted">Tap “Save update” to keep the changes.</div></div></details>';
+}
+function sheetNew(s){
+  const d=s.d;
+  return sheetHd('New lead')
+   +'<label class="f">Name<input id="n-name" data-in="n-name" value="'+esc(d.name||'')+'" autocomplete="off"></label><label class="f">Phone (10 digits)<input id="n-phone" data-in="n-phone" inputmode="numeric" maxlength="10" value="'+esc(d.phone||'')+'"></label>'
+   +'<label class="f">How did they come?</label>'+chipRow(['Walk-in','Whatsapp Chat','Whatsapp Call','Call'],d.status,'d-status')
+   +'<label class="f">Plan interested in<input id="n-plan" data-in="n-plan" placeholder="e.g. 3 Months" value="'+esc(d.plan||'')+'"></label><label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="Budget, timing, goals">'+esc(d.note||'')+'</textarea></label>'
+   +'<div id="n-err" class="late small" role="alert">'+esc(d.err||'')+'</div><button class="btn" data-a="save-newlead">Add lead</button>';
+}
+function sheetStaffDay(s){
+  const st=S.staff[s.id];if(!st)return sheetHd('Staff');const list=actsFor(s.id,S.tdate);const c=count(list);
+  const od=Object.values(S.leads).filter(l=>l.by===st.name&&leadMeta(l).late);
+  return sheetHd(st.name,'<div class="muted small">'+cap(st.role)+' · '+(S.tdate===today()?'Today':fdLong(S.tdate))+'</div>')
+   +'<div class="grid2">'+KINDS.map(k=>metricCard(k[0],k[1],c[k[0]],S.targets[k[0]],false)).join('')+metricCard('x','Calls connected',c.connected,0)+'</div>'
+   +'<div class="card stack"><h3>Activity</h3>'+timeline(list,false)+'</div>'
+   +'<div class="card stack"><h3>Overdue leads assigned ('+od.length+')</h3>'+(od.length?od.slice(0,8).map(l=>'<div class="row between small"><span>'+esc(l.name)+'</span><span class="late">'+diff(today(),l.next)+'d late</span></div>').join('')+(od.length>8?'<div class="muted small">and '+(od.length-8)+' more</div>':''):'<div class="muted">None. All follow-ups are up to date.</div>')+'</div>';
+}
+function sheetStaffEdit(s){
+  const d=s.d;
+  return sheetHd(s.id?'Edit staff':'Add staff')+'<label class="f">Name<input id="s-name" data-in="s-name" value="'+esc(d.name||'')+'"></label><label class="f">Role</label>'+chipRow(ROLES.map(cap),cap(d.role||'receptionist'),'s-role')
+   +'<label class="f">'+(s.id?'New 4-digit PIN (leave empty to keep the current one)':'4-digit PIN')+'<input id="s-pin" data-in="s-pin" inputmode="numeric" maxlength="4" autocomplete="off" value="'+esc(d.pin||'')+'"></label><label class="row small" style="gap:8px"><input type="checkbox" id="s-active" data-in="s-active" '+(d.active!==false?'checked':'')+' style="width:18px;height:18px"> Active (can sign in)</label>'
+   +'<div id="n-err" class="late small" role="alert">'+esc(d.err||'')+'</div><button class="btn" data-a="staff-save">Save</button>';
+}
+
+/* ---------- writes ---------- */
+let uid=0;const newId=p=>p+'-'+Date.now().toString(36)+(uid++).toString(36)+Math.random().toString(36).slice(2,5);
+async function logAct(o){
+  const ts=Date.now();const id=ts+'-'+(S.me||'x')+'-'+(uid++);
+  const a={id,ts,date:ymd(new Date(ts)),staff:S.me,kind:o.kind,outcome:o.outcome||'',refType:o.refType||'',refId:o.refId||'',refName:o.refName||'',note:o.note||'',toStatus:o.toStatus||''};
+  await S.db.doc('activity/'+id).set(a);return a;
+}
+async function guard(fn){try{await fn()}catch(e){toast(e&&e.status===403?'You are not allowed to do that.':'Could not save. Check your connection and try again.');console.error(e);return false}return true}
+function stamp(d,extra){return fd(today())+' · '+me().name+' · '+extra}
+
+async function saveLead(){
+  const s=S.sheet,l=S.leads[s.id],d=s.d,m=me(),e=d.e;
+  const edits={};['name','phone','plan','by','remarks'].forEach(k=>{if((e[k]||'').trim()!==(l[k]||''))edits[k]=(e[k]||'').trim()});
+  if('name' in edits&&!edits.name){toast('Name cannot be empty');return}
+  if(edits.phone&&!/^\d{10}$/.test(edits.phone)){toast('Phone must be 10 digits');return}
+  const nEd=Object.keys(edits).length;
+  if(!(d.action||d.status!==l.status||(d.next&&d.next!==l.next)||d.note||nEd)){toast('Nothing to save yet');return}
+  if(d.action==='call'&&!d.outcome){toast('Pick the call result');return}
+  const bits=[d.action?({call:'Call',counselling:'Counselling',whatsapp:'WhatsApp',walkin:'Walk-in visit'}[d.action]+(d.outcome?' – '+d.outcome:'')):'',d.status!==l.status?'Status → '+d.status:'',(d.next&&d.next!==l.next)?'Next '+fd(d.next):'',nEd?'Details edited':'',d.note].filter(Boolean).join(' · ');
+  const hist=(l.hist||[]).concat([stamp(d,bits)]).slice(-12);
+  const upd={status:d.status,next:d.next||l.next||'',hist,lastTouch:Date.now(),lastBy:m.name};
+  if(!l.by&&m.role!=='owner'&&m.role!=='manager')upd.by=m.name;
+  Object.assign(upd,edits);
+  const ok=await guard(async()=>{
+    await S.db.doc('leads/'+l.id).update(upd);
+    if(d.action||d.status!==l.status)await logAct({kind:d.action||'note',outcome:d.action==='call'?d.outcome:'',refType:'lead',refId:l.id,refName:upd.name||l.name,note:d.note,toStatus:d.status!==l.status?d.status:''});
+  });
+  if(ok){toast('Saved');closeSheet()}
+}
+async function saveRen(){
+  const s=S.sheet,r=S.ren[s.id],d=s.d,m=me(),e=d.e;
+  const edits={};
+  ['plan','expiry','by','offer','next'].forEach(k=>{if((e[k]||'')!==(r[k]||''))edits[k]=e[k]||''});
+  ['amount','paid'].forEach(k=>{if(Number(e[k]||0)!==Number(r[k]||0))edits[k]=Number(e[k]||0)});
+  if('amount' in edits||'paid' in edits)edits.due=Math.max(0,Number('amount' in edits?edits.amount:r.amount||0)-Number('paid' in edits?edits.paid:r.paid||0));
+  if(edits.expiry===''){toast('Expiry date is needed');return}
+  const nEd=Object.keys(edits).length;
+  if(!(d.action||d.status!==r.fstatus||d.note||nEd)){toast('Nothing to save yet');return}
+  if(d.action==='renewal'&&!d.outcome){toast('Pick the call result');return}
+  const bits=[d.action==='renewal'?'Call'+(d.outcome?' – '+d.outcome:''):d.action?'Met in person':'',d.status!==r.fstatus?'Status → '+d.status:'',nEd?'Details edited':'',d.note].filter(Boolean).join(' · ');
+  const upd={fstatus:d.status,note:(r.note?r.note+' | ':'')+stamp(d,bits),lastTouch:Date.now(),lastBy:m.name};
+  if(d.status==='Renewed'&&d.amt)upd.renewAmount=Number(d.amt);
+  if(!r.by)upd.by=m.name;
+  Object.assign(upd,edits);
+  const ok=await guard(async()=>{
+    await S.db.doc('renewals/'+r.id).update(upd);
+    if(d.action||d.status!==r.fstatus)await logAct({kind:d.action==='renewal'?'renewal':d.action==='counselling'?'counselling':'note',outcome:d.action==='renewal'?d.outcome:'',refType:'renewal',refId:r.id,refName:r.name,note:d.note,toStatus:d.status!==r.fstatus?d.status:''});
+  });
+  if(ok){toast('Saved');closeSheet()}
+}
+async function saveNew(){
+  const s=S.sheet,d=s.d,m=me();
+  const err=x=>{d.err=x;$('#n-err').textContent=x};
+  if(!(d.name||'').trim())return err('Enter the name.');
+  if(d.phone&&!/^\d{10}$/.test(d.phone))return err('Phone must be 10 digits.');
+  if(!d.status)return err('Choose how they came.');
+  const id=newId('N');const l={id,date:today(),name:d.name.trim(),phone:d.phone||'',plan:(d.plan||'').trim(),status:d.status,next:addDays(today(),d.status==='Walk-in'?1:2),by:m.name,remarks:(d.note||'').trim(),hist:[],lastTouch:Date.now(),lastBy:m.name};
+  const kind=d.status==='Walk-in'?'walkin':d.status==='Call'?'call':'whatsapp';
+  const ok=await guard(async()=>{await S.db.doc('leads/'+id).set(l);await logAct({kind,outcome:kind==='call'?'Connected':'',refType:'lead',refId:id,refName:l.name,note:'New lead'})});
+  if(ok){toast('Lead added');closeSheet()}
+}
+async function quick(kind){
+  const m=me(),c=count(actsFor(m.id,today()));
+  const ok=await guard(()=>logAct({kind,outcome:kind==='call'?'Connected':''}));
+  if(ok)toast((KINDS.find(k=>k[0]===kind)||[0,kind])[1]+' +1');
+}
+async function saveStaff(){
+  const s=S.sheet,d=s.d;const err=x=>{d.err=x;$('#n-err').textContent=x};
+  if(!(d.name||'').trim())return err('Enter a name.');
+  if(d.pin&&!/^\d{4}$/.test(d.pin))return err('PIN must be 4 digits.');
+  if(!s.id&&!d.pin)return err('Choose a 4-digit PIN.');
+  const dup=Object.values(S.staff).find(x=>x.id!==s.id&&x.name.toLowerCase()===d.name.trim().toLowerCase());
+  if(dup)return err('Another staff member has this name.');
+  const id=s.id||newId('s');
+  const doc={id,name:d.name.trim(),role:(d.role||'receptionist').toLowerCase(),active:d.active!==false};if(d.pin)doc.pin=d.pin;
+  let ok=true;try{await S.db.doc('staff/'+id).set(doc)}catch(e){ok=false;err(e.message||'Could not save.')}
+  if(ok){toast('Saved');closeSheet()}
+}
+async function saveTargets(){
+  const t={};KINDS.forEach(k=>{t[k[0]]=Math.max(0,parseInt($('#t-'+k[0]).value,10)||0)});
+  if(await guard(()=>S.db.doc('config/targets').set(t)))toast('Targets saved');
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;const sh=S.sheet;
+  if(a==='scrim'){if(e.target===b)closeSheet();return}
+  switch(a){
+   case'login-pick':S.loginPick=v;renderLogin();setTimeout(()=>{const p=$('#pin');p&&p.focus()},50);break;
+   case'login-back':S.loginPick=null;renderLogin();break;
+   case'login-submit':{const pin=($('#pin').value||'').trim();b.disabled=true;try{const m=await KNet.login(S.loginPick,pin);S.me=m.id;S.staff[m.id]=m;S.loginPick=null;S.tab=null;startSync();render()}catch(err){const pe=$('#pinerr');if(pe)pe.textContent=err.status===429?'Too many wrong PINs. Wait 10 minutes.':err.status===0?'No internet. Try again.':'Wrong PIN. Try again.';const pi=$('#pin');if(pi){pi.value='';pi.focus()}b.disabled=false}break}
+   case'logout':KNet.logout();synced=false;S.me=null;S.tab=null;S.leads={};S.ren={};S.acts=[];S.ready={staff:1};S.sheet=null;try{$('#layer').innerHTML=''}catch(_){}KNet.staffList().then(l=>{S.staff={};l.forEach(s=>S.staff[s.id]=s);render()}).catch(()=>{});render();break;
+   case'tab':S.tab=v;S.lim=40;S.rlim=40;render();window.scrollTo(0,0);break;
+   case'go-leads':S.tab='leads';S.lf=v;S.mine=true;render();break;
+   case'go-ren':S.tab='ren';S.rf='week';render();break;
+   case'lf':S.lf=v;S.lim=40;renderMain();break;
+   case'rk':S.rk=v;renderMain();break;
+   case'rf':S.rf=v;renderMain();break;
+   case'more-leads':S.lim+=60;renderLeadList();break;
+   case'tdate':{const n=addDays(S.tdate,+v);if(n<=today()){S.tdate=n;renderMain()}break}
+   case'tdate-today':S.tdate=today();renderMain();break;
+   case'open-lead':{const l=S.leads[v];openSheet({type:'lead',id:v,d:{action:'',outcome:'',status:l.status,next:l.next||'',note:'',reply:'',e:{name:l.name||'',phone:l.phone||'',plan:l.plan||'',by:l.by||'',remarks:l.remarks||''}}});break}
+   case'open-ren':{const r=S.ren[v];openSheet({type:'ren',id:v,d:{action:'',outcome:'',status:r.fstatus,note:'',amt:'',e:{plan:r.plan||'',expiry:r.expiry||'',amount:r.amount||'',paid:r.paid||'',by:r.by||'',offer:r.offer||'',next:r.next||''}}});break}
+   case'open-staff':openSheet({type:'staffday',id:v});break;
+   case'newlead':openSheet({type:'newlead',d:{status:'',name:'',phone:'',plan:'',note:''}});break;
+   case'close-sheet':closeSheet();break;
+   case'd-action':sh.d.action=sh.d.action===v?'':v;if(sh.d.action!=='call'&&sh.d.action!=='renewal')sh.d.outcome='';sh.refresh=true;renderSheet();break;
+   case'd-outcome':sh.d.outcome=v;sh.refresh=true;renderSheet();break;
+   case'd-status':sh.d.status=v;sh.refresh=true;renderSheet();break;
+   case'd-next':sh.d.next=v;sh.refresh=true;renderSheet();break;
+   case's-role':sh.d.role=v.toLowerCase();sh.refresh=true;renderSheet();break;
+   case'save-lead':b.disabled=true;await saveLead();b.disabled=false;break;
+   case'save-ren':b.disabled=true;await saveRen();b.disabled=false;break;
+   case'save-newlead':b.disabled=true;await saveNew();b.disabled=false;break;
+   case'staff-new':openSheet({type:'staffedit',id:'',d:{role:'receptionist',active:true}});break;
+   case'staff-edit':openSheet({type:'staffedit',id:v,d:{...S.staff[v],pin:''}});break;
+   case'staff-save':b.disabled=true;await saveStaff();b.disabled=false;break;
+   case'save-targets':saveTargets();break;
+   case'install':{const ev=S.installEv;S.installEv=null;if(ev){ev.prompt();try{await ev.userChoice}catch(_){}}renderMain();break}
+   case'quick':quick(v);break;
+   case'copy-text':try{await navigator.clipboard.writeText(REPLIES[+v].a);toast('Message copied')}catch(_){toast('Select the text and copy')}break;
+   case'rng':S.rng=+v;renderMain();break;
+   case'xl-all':exportAll();break;
+   case'xl-act':exportActivity();break;
+   case'pv-apply':applyPreview();break;
+   case'pv-clear':S.pv=null;renderMain();break;
+   case'del-act':if(b.dataset.armed){await guard(()=>S.db.doc('activity/'+v).delete());toast('Removed')}else{b.dataset.armed='1';b.textContent='Remove?';b.style.color='var(--bad)';setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='×';b.style.color=''}},2500)}break;
+   case'copy':try{await navigator.clipboard.writeText(v);toast('Number copied')}catch(_){toast(v)}break;
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target,k=t.dataset&&t.dataset.in;if(!k)return;const sh=S.sheet;
+  if(k==='q'){S.q=t.value;S.lim=40;renderLeadList()}
+  else if(k==='pv-upd'){S.pv.upd=t.checked;}
+  else if(k==='mine'){S.mine=t.checked;renderMain()}
+  else if(k==='r-pick'){sh.d.reply=t.value;sh.refresh=true;renderSheet()}
+  else if(k.startsWith('e-')){const f=k.slice(2);if(f==='phone'){t.value=t.value.replace(/\D/g,'')}sh.d.e[f]=t.value}
+  else if(k==='d-note')sh.d.note=t.value;
+  else if(k==='d-nextdate')sh.d.next=t.value;
+  else if(k==='d-amt')sh.d.amt=t.value;
+  else if(k==='n-name')sh.d.name=t.value;
+  else if(k==='n-phone'){t.value=t.value.replace(/\D/g,'');sh.d.phone=t.value}
+  else if(k==='n-plan')sh.d.plan=t.value;
+  else if(k==='s-name')sh.d.name=t.value;
+  else if(k==='s-pin'){t.value=t.value.replace(/\D/g,'');sh.d.pin=t.value}
+  else if(k==='s-active')sh.d.active=t.checked;
+});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='imp-file'&&t.files&&t.files[0]){readImportFile(t.files[0]);t.value=''}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='pin')document.querySelector('[data-a="login-submit"]').click();if(e.key==='Escape'&&S.sheet)closeSheet()});
+
+/* ---------- boot ---------- */
+const map=snap=>{const o={};snap.docs.forEach(d=>{o[d.id]=d.data()});return o};
+let synced=false;
+function startSync(){
+  if(!synced){synced=true;
+    S.db.collection('staff').onSnapshot(s=>{S.staff=map(s);S.ready.staff=1;dirty()});
+    S.db.collection('leads').onSnapshot(s=>{S.leads=map(s);S.ready.leads=1;dirty()});
+    S.db.collection('renewals').onSnapshot(s=>{S.ren=map(s);S.ready.ren=1;dirty()});
+    S.db.collection('activity').where('date','>=',addDays(today(),-31)).onSnapshot(s=>{S.acts=s.docs.map(d=>d.data());S.ready.acts=1;dirty()});
+    S.db.doc('config/targets').onSnapshot(s=>{S.targets=Object.assign({},DEF_T,s.exists?s.data():{});dirty()});
+  }
+  KNet.start();
+}
+async function boot(){
+  render();
+  S.db=KNet.db;S.dl=KNet.downloads;
+  KNet.onAuthLost=()=>{S.me=null;S.tab=null;S.sheet=null;try{$('#layer').innerHTML=''}catch(_){}render();toast('Please sign in again')};
+  KNet.onStatus=ok=>{if(S.offline===ok){S.offline=!ok;if(S.me&&!S.sheet)dirty()}};
+  try{const l=await KNet.staffList();l.forEach(s=>S.staff[s.id]=s);S.ready.staff=1}
+  catch(e){S.err='Cannot reach the K-Fit server. Check your internet and reload.';render();return}
+  if(KNet.hasToken()){try{const m=await KNet.me();S.me=m.id;S.staff[m.id]=m;startSync()}catch(e){}}
+  render();
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();S.installEv=e;if(S.me&&S.tab==='more')dirty()});
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[data-act]');if(!a||!S.sheet)return;const sh=S.sheet,act=a.dataset.act;
+  if(sh.type==='lead')sh.d.action=act;else if(sh.type==='ren'&&act==='call')sh.d.action='renewal';else return;
+  sh.refresh=true;setTimeout(renderSheet,0);
+});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&!window.KFIT_DEMO)navigator.serviceWorker.register('sw.js').catch(()=>{});
+window.__kfit=S;
+boot();
+})();
+</script>
+
+</body></html>

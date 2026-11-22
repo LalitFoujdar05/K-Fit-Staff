@@ -1,0 +1,14 @@
+{
+  "appId": "in.kfitclub.staff",
+  "appName": "K-Fit Staff",
+  "webDir": "www",
+  "backgroundColor": "#F2F4F1",
+  "server": {
+    "url": "https://YOUR-SERVER-ADDRESS",
+    "cleartext": false,
+    "errorPath": "offline.html"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

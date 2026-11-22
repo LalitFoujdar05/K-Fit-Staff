@@ -1,0 +1,1 @@
+{ "name": "kfit-staff", "version": "1.0.0", "private": true, "description": "K-Fit Club staff work tracker", "main": "server.js", "scripts": { "start": "node server.js", "test": "node test/api.test.js" }, "engines": { "node": ">=18" } }
