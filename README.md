@@ -20,6 +20,8 @@ Open http://localhost:3000. On the first start it loads `seed.json` (your 1,135 
 
 ## 2. Put it online so phones can reach it
 
+**Free, no card: follow `FREE-HOSTING.md`.** The options below are paid or need your own machine.
+
 It must run somewhere that is always on. Pick one:
 
 - **A small cloud server (best).** Any VPS with 512 MB memory works (about ₹400 to ₹600 a month). Install Docker, then:
@@ -53,6 +55,8 @@ All data is `data/db.json` (in Docker: `/data/db.json`). The server keeps a copy
 | `TOKEN_DAYS` | 30 | Days a phone stays signed in |
 | `TZ_OFFSET_MIN` | 330 | India time |
 | `ADMIN_PIN` | 1234 | Only used if there is no `seed.json` |
+| `SHEET_URL`, `SHEET_SECRET` | empty | Optional automatic copy to a Google Sheet (see `GOOGLE-SHEET.md`) |
+| `SUPABASE_URL`, `SUPABASE_KEY` | empty | Free mode: keep data in Supabase instead of a file (see `FREE-HOSTING.md`) |
 
 ## What is different from your original
 

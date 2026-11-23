@@ -300,6 +300,11 @@ function viewMore(){
     h+='<div class="card stack"><h3>Daily targets</h3><div class="small muted">Used for progress bars on every staff screen.</div><div class="grid2">'+KINDS.map(k=>'<label class="f">'+k[1]+'<input type="number" min="0" inputmode="numeric" id="t-'+k[0]+'" value="'+(T[k[0]]||0)+'"></label>').join('')+'</div><button class="btn" data-a="save-targets">Save targets</button></div>';
     h+='<div class="card stack"><div class="row between"><h3>Team & PINs</h3><button class="chip" data-a="staff-new">+ Add</button></div>'+Object.values(S.staff).sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name)).map(s=>'<button class="row between" data-a="staff-edit" data-v="'+esc(s.id)+'"><span class="row"><div class="av">'+esc(ini(s.name))+'</div><span style="text-align:left"><b>'+esc(s.name)+'</b><br><span class="muted small">'+esc(cap(s.role))+(s.active?'':' · inactive')+'</span></span></span><span class="muted">Edit ›</span></button>').join('')+'</div>';
   }
+  if(isOwner()&&!window.KFIT_DEMO){
+    if(S.sheetSt===undefined){S.sheetSt=null;KNet.api('GET','/api/sheet-status').then(r=>{S.sheetSt=r;if(S.tab==='more'&&!S.sheet)dirty()}).catch(()=>{S.sheetSt={enabled:false}})}
+    const ss=S.sheetSt,ls=ss&&ss.last;
+    h+='<div class="card stack"><h3>Copy to Google Sheet</h3><div class="small muted">'+(ss&&ss.enabled?'Everything staff log is copied to your Google Sheet automatically, a couple of minutes after each change.':'Not set up yet. Follow GOOGLE-SHEET.md to turn this on.')+'</div>'+(ls?'<div class="small">Last copy: '+(ls.ok?'<b>worked</b>':'<b style="color:var(--bad,#B42318)">failed</b>')+' · '+esc(ls.msg||'')+' · '+esc(new Date(ls.at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}))+'</div>':'')+(ss&&ss.enabled?'<button class="btn sec" data-a="sheet-sync">Copy to Google Sheet now</button>':'')+'</div>';
+  }
   if(isMgr())h+='<div class="card stack"><h3>Excel / Google Sheet data</h3><div class="small muted">Download everything in the same columns as your sheet, or add new rows from a sheet. In Google Sheets use File, Download, Microsoft Excel (.xlsx), then pick the file here.</div>'+(S.dl?'<button class="btn" data-a="xl-all">Download all data (Excel)</button>':'')+'<label class="btn sec" style="cursor:pointer">Import from Excel or CSV<input type="file" id="imp-file" accept=".xlsx,.xls,.csv" hidden></label>'+previewCard()+impLine()+'</div>';
   if(!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)&&!navigator.standalone)h+='<div class="card stack"><h3>Put this app on your phone</h3>'+(S.installEv?'<button class="btn" data-a="install">Install K-Fit Staff</button>':'<div class="small"><b>Android:</b> open in Chrome, tap the ⋮ menu, then Install app (or Add to Home screen).<br><b>iPhone:</b> open in Safari, tap Share, then Add to Home Screen.</div>')+'</div>';
   h+='<button class="btn sec" data-a="logout">Switch user / sign out</button>';
@@ -642,6 +647,7 @@ document.addEventListener('click',async e=>{
    case'staff-edit':openSheet({type:'staffedit',id:v,d:{...S.staff[v],pin:''}});break;
    case'staff-save':b.disabled=true;await saveStaff();b.disabled=false;break;
    case'save-targets':saveTargets();break;
+   case'sheet-sync':{b.disabled=true;b.textContent='Copying…';try{S.sheetSt=await KNet.api('POST','/api/sheet-sync');toast(S.sheetSt.last&&S.sheetSt.last.ok?'Copied to Google Sheet':'Copy failed')}catch(e){toast(e.message||'Copy failed')}renderMain();break}
    case'install':{const ev=S.installEv;S.installEv=null;if(ev){ev.prompt();try{await ev.userChoice}catch(_){}}renderMain();break}
    case'quick':quick(v);break;
    case'copy-text':try{await navigator.clipboard.writeText(REPLIES[+v].a);toast('Message copied')}catch(_){toast('Select the text and copy')}break;

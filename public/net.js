@@ -39,6 +39,7 @@
     }
     return j;
   }
+  N.api = api;
   N.staffList = () => api('GET', '/api/staff-list');
   N.me = () => api('GET', '/api/me');
   N.login = async (id, pin) => { const r = await api('POST', '/api/login', { id, pin }); setToken(r.token); return r.me; };
