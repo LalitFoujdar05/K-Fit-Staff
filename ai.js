@@ -79,13 +79,25 @@ async function ask(env, db, user, messages, now, fetchFn) {
   if (!msgs.length || msgs[msgs.length - 1].role !== 'user') { const e = new Error('Ask a question first'); e.status = 400; throw e; }
   used[k] = (used[k] || 0) + 1;
   const base = env.AI_BASE_URL.replace(/\/+$/, '');
-  const r = await (fetchFn || fetch)(base + '/chat/completions', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.AI_KEY },
-    body: JSON.stringify({ model: env.AI_MODEL || 'auto', temperature: 0.2, max_tokens: 900, messages: [{ role: 'system', content: SYSTEM(snapshot(db, now)) }].concat(msgs) }),
-    signal: AbortSignal.timeout(45000)
-  });
-  const t = await r.text();
-  if (!r.ok) { const e = new Error('The AI service said: ' + r.status + ' ' + cut(t, 160)); e.status = 502; throw e; }
+  const models = String(env.AI_MODEL || 'auto').split(',').map(x => x.trim()).filter(Boolean);
+  const sys = SYSTEM(snapshot(db, now));
+  let r = null, t = '';
+  for (let i = 0; i < 4; i++) { // busy (429/500/502/503/504): wait a little, then try the next model in the list
+    const model = models[i % models.length];
+    try {
+      r = await (fetchFn || fetch)(base + '/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + env.AI_KEY },
+        body: JSON.stringify({ model, temperature: 0.2, max_tokens: +env.AI_MAX_TOKENS || 1800, messages: [{ role: 'system', content: sys }].concat(msgs) }),
+        signal: AbortSignal.timeout(40000)
+      });
+      t = await r.text();
+    } catch (err) { r = null; t = String(err.message || err); }
+    if (r && r.ok) break;
+    if (r && ![429, 500, 502, 503, 504].includes(r.status)) break;
+    await new Promise(z => setTimeout(z, +env.AI_RETRY_MS >= 0 ? +env.AI_RETRY_MS : 1500));
+  }
+  if (!r) { const e = new Error('Could not reach the AI service: ' + cut(t, 100)); e.status = 502; throw e; }
+  if (!r.ok) { const e = new Error(r.status === 503 || r.status === 429 ? 'The AI service is busy right now. Please try again in a minute.' : 'The AI service said: ' + r.status + ' ' + cut(t, 160)); e.status = 502; throw e; }
   let j; try { j = JSON.parse(t); } catch (e) { const er = new Error('The AI service sent an unreadable answer'); er.status = 502; throw er; }
   const p = parseReply(((j.choices || [])[0] || {}).message && j.choices[0].message.content);
   return { reply: String(p.reply).slice(0, 2500), actions: checkActions(p.actions, db) };
