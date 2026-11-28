@@ -3,6 +3,7 @@
 const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
 const { create, emptyDb, HttpError } = require('./public/store.js');
 const sheetBuild = require('./sheet.js').build;
+const ai = require('./ai.js');
 
 const PORT = +process.env.PORT || 3000;
 const DATA = path.resolve(process.env.DATA_DIR || path.join(__dirname, 'data'));
@@ -63,9 +64,9 @@ async function pushSheet() {
   if (sheetBusy) { sheetDirty(); return sheetLast; }
   sheetBusy = true;
   try {
-    const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(Object.assign({ secret: SHEET_SECRET }, sheetBuild(db, Date.now()))), redirect: 'follow' });
+    const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(Object.assign({ secret: SHEET_SECRET }, sheetBuild(db, Date.now(), { renewals: process.env.CALENDAR_RENEWALS === '1' }))), redirect: 'follow' });
     const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch (e) {}
-    sheetLast = { ok: !!(j && j.ok), at: Date.now(), msg: j ? (j.ok ? 'Copied ' + j.rows + ' rows' : j.error || 'Refused') : 'Unexpected reply (check the script is deployed for Anyone)' };
+    sheetLast = { ok: !!(j && j.ok), at: Date.now(), msg: j ? (j.ok ? 'Copied ' + j.rows + ' rows' + (j.calendar ? ' · ' + j.calendar : '') : j.error || 'Refused') : 'Unexpected reply (check the script is deployed for Anyone)' };
   } catch (e) { sheetLast = { ok: false, at: Date.now(), msg: e.message }; }
   if (!sheetLast.ok) console.error('Sheet copy failed:', sheetLast.msg);
   sheetBusy = false; return sheetLast;
@@ -134,6 +135,12 @@ async function api(req, res, url) {
   if (p === '/api/activity' && m === 'GET') return send(req, res, 200, store.activity(user, url.searchParams.get('from')));
   if (p === '/api/sheet-status' && m === 'GET') { if (user.role !== 'owner') throw new HttpError(403, 'Owner only'); return send(req, res, 200, { enabled: !!SHEET_URL, last: sheetLast }); }
   if (p === '/api/sheet-sync' && m === 'POST') { if (user.role !== 'owner') throw new HttpError(403, 'Owner only'); if (!SHEET_URL) throw new HttpError(400, 'Google Sheet is not set up yet'); return send(req, res, 200, { enabled: true, last: await pushSheet() }); }
+  if (p === '/api/ai-status' && m === 'GET') return send(req, res, 200, { enabled: ai.configured(process.env) });
+  if (p === '/api/ai' && m === 'POST') {
+    if (!ai.configured(process.env)) throw new HttpError(400, 'AI is not set up yet. The owner needs to add AI_BASE_URL and AI_KEY in Render.');
+    try { return send(req, res, 200, await ai.ask(process.env, db, user, (await readBody(req)).messages, Date.now())); }
+    catch (e) { if (e instanceof HttpError) throw e; if (e.status) throw new HttpError(e.status, e.message); console.error('AI error', e.message); throw new HttpError(502, 'The AI service did not answer. Try again.'); }
+  }
   if (p === '/api/bulk' && m === 'POST') return send(req, res, 200, store.bulk(user, (await readBody(req)).ops));
   const d = p.match(/^\/api\/doc\/(\w+)\/([^/]+)$/);
   if (d) {

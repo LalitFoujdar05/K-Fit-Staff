@@ -33,6 +33,12 @@ const c = st.sync(u('r'), f.rev); assert.strictEqual(c.docs.leads.length, 1); as
 st.write(u('m'), 'delete', 'leads', 'K-1'); assert.deepStrictEqual(st.sync(u('r'), c.rev).del, [['leads', 'K-1']]);
 // bulk
 const b = st.bulk(u('r'), [['set', 'leads/N-1', { name: 'B' }], ['set', 'staff/zz', { name: 'Z', role: 'owner', pin: '1234' }]]); assert.strictEqual(b.ok, 1); assert.strictEqual(b.failed.length, 1);
+// hot list: anyone can add and update, only managers delete
+st.write(u('r'), 'set', 'hot', 'h1', { id: 'h1', type: 'visit', name: 'P', when: '2026-11-25', status: 'open', by: 'r', notes: [] });
+st.write(u('r2'), 'update', 'hot', 'h1', { status: 'done' });
+throws(() => st.write(u('r'), 'delete', 'hot', 'h1'), 403);
+st.write(u('m'), 'delete', 'hot', 'h1');
+assert.ok(st.sync(u('r'), 0).docs.hot.length === 0);
 console.log('store checks passed');
 
 // HTTP

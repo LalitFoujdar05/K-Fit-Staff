@@ -115,12 +115,20 @@ const OUTCOMES=['Connected','No answer','Busy','Switched off','Wrong number'];
 const REPLIES=[{"q": "“I’m a beginner. Can I join?”", "a": "Of course. You don't need to be experienced to start. Our trainers can help you understand the basics and build your routine gradually."}, {"q": "If someone doesn't answer the call", "a": "Hi! 😊 This is from K-Fit Club.\nYou had enquired through our ad, so we just tried connecting with you.\nWhenever you're free, let us know. We'd be happy to share the details or arrange a quick visit for you!"}, {"q": "Do you charge GST?", "a": "All taxes and charges are clearly shown in the final plan sheet we give you during the visit, so you know the full amount before deciding. Can I book a time for you to see it?"}, {"q": "Is the price negotiable?", "a": "We always try to find the best possible plan for each person. The best offers are explained at the gym, and the sooner you visit, the better we can help. Can I book you in?"}, {"q": "What are your fees?", "a": "Great question! Our plans depend on the duration and what you want to use, so I'd rather give you the exact right number than a vague one. The best way is a quick 15-min visit where we match a plan to your goal. Would today evening or tomorrow morning suit you better?"}, {"q": "If someone visited but didn't join", "a": "Hi! 😊 Thank you for visiting K-Fit Club. Hope you had a good experience exploring the club! Let us know if you have any questions about the membership or need help choosing the right option."}, {"q": "Another gym is cheaper.", "a": "Fair point. Price is one factor; equipment, trainers, hygiene and results matter too. Visit both and compare. Can I show you ours?"}, {"q": "I'm not sure if I'll continue.", "a": "That's okay. Come see how we help members stay consistent. Our plans are explained clearly. When can you visit?"}, {"q": "Please stop calling me.", "a": "Sorry for the trouble, I've noted it and we won't call again. Have a great day."}, {"q": "What is K-Fit Club?", "a": "K-Fit Club is a complete fitness space where you can work on your goals through strength training, cardio, group sessions and guided programs—all under one roof."}, {"q": "Can I try the gym before joining? (trial)", "a": "We'd be happy to help! 😊 Let me check the available trial options for you and get back to you with the details."}, {"q": "Where are you located?", "a": "Opp. Saint Wilfred's Law College.\nHere's the location for the same.\nhttps://share.google/tya2m2aRakCf9WXoK"}];
 const ROLES=['owner','manager','receptionist','trainer'];
 const DEF_T={call:40,counselling:8,whatsapp:20,renewal:15,walkin:0};
+const HOT=[['visit','Visiting'],['join','Joining'],['pay','Will pay'],['friends','Bringing friends'],['upgrade','Upgrading plan'],['freeze','Freezing'],['other','Other']];
+const HOTL=Object.fromEntries(HOT.map(x=>[x[0],x[1]]));
+const HOT_PILL={visit:'p-open',join:'p-won',pay:'p-won',friends:'p-open',upgrade:'p-open',freeze:'p-warn',other:'p-lost'};
+const HOT_HINT={visit:'e.g. evening after 6, wants a trial',join:'e.g. 6 months plan, will bring documents',pay:'e.g. payment link sent, will pay tonight',friends:'e.g. 2 friends, both want a trial',upgrade:'e.g. 6 months to 12 months',freeze:'e.g. 1 month, travelling',other:'What is expected?'};
+const HOT_ASK={visit:'Did they come?',join:'Did they join?',pay:'Did they pay?',friends:'Did they bring friends?',upgrade:'Did they upgrade?',freeze:'Was the freeze done?',other:'Did it happen?'};
+const HOT_MSG={visit:n=>'Hi '+n+', this is K-FIT CLUB. We are expecting you. See you soon!',join:n=>'Hi '+n+', this is K-FIT CLUB. Looking forward to getting you started. Let us know if you need anything.',pay:n=>'Hi '+n+', this is K-FIT CLUB. A gentle reminder about your payment. Tell us if you need the link again.',friends:n=>'Hi '+n+', this is K-FIT CLUB. We are happy to host your friends. See you soon!',upgrade:n=>'Hi '+n+', this is K-FIT CLUB. Thank you for choosing to upgrade. Let us know when you are coming.',freeze:n=>'Hi '+n+', this is K-FIT CLUB. About your membership freeze, please let us know the dates.',other:n=>'Hi '+n+', this is K-FIT CLUB.'};
+const HF=[['today','Today'],['soon','Coming up'],['late','Update needed'],['done','Closed'],['all','All waiting']];
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ICON={
  rep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>',
  team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 010 7M18 14.5c2 .7 3.5 2.4 3.5 5.5"/></svg>',
  leads:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg>',
+ hot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.8 3.2 5 5.2 5 9.8a5 5 0 01-10 0c0-1.9.9-3.3 2-4.3.3 1.1 1 1.9 2 1.9 0-2.8-.8-4.8 1-7.4z"/></svg>',
  ren:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-2.6-5.9M20 4v5h-5"/></svg>',
  more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>'};
 
@@ -138,7 +146,7 @@ const ini=n=>(String(n||'?').replace(/^(Mr|Ms|Mrs)\s+/i,'').trim()[0]||'?').toUp
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):'';
 const rupee=n=>'₹'+Number(n||0).toLocaleString('en-IN');
 
-const S={db:null,ready:{},staff:{},leads:{},ren:{},acts:[],targets:{...DEF_T},me:null,tab:null,
+const S={db:null,ready:{},staff:{},leads:{},ren:{},hot:{},hf:'today',ht:'',hmine:false,acts:[],targets:{...DEF_T},me:null,tab:null,
   lf:'due',mine:false,q:'',lim:40,rk:'Membership',rf:'todo',rq:'',rlim:40,tdate:today(),sheet:null,loginPick:null,canWrite:true,err:'',isOwner:false,imp:null,dl:null,rng:7,pv:null,offline:false,installEv:null};
 const me=()=>S.staff[S.me];
 const isMgr=()=>{const m=me();return m&&(m.role==='owner'||m.role==='manager')};
@@ -163,14 +171,15 @@ function render(){
   if(!Object.keys(S.staff).length){renderSetup();return}
   const m=me();
   if(!m||!m.active){renderLogin();return}
-  if(!(S.ready.leads&&S.ready.ren&&S.ready.acts)){app.innerHTML='<div class="login"><h2>K-Fit Club</h2><p class="muted">Loading your data…</p></div>';return}
-  const tabs=isMgr()?[['team','Team',ICON.team],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['rep','Reports',ICON.rep],['more','More',ICON.more]]:[['today','Today',ICON.today],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['more','Me',ICON.more]];
+  if(!(S.ready.leads&&S.ready.ren&&S.ready.acts&&S.ready.hot)){app.innerHTML='<div class="login"><h2>K-Fit Club</h2><p class="muted">Loading your data…</p></div>';return}
+  const tabs=isMgr()?[['team','Team',ICON.team],['hot','Hot list',ICON.hot],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['rep','Reports',ICON.rep],['more','More',ICON.more]]:[['today','Today',ICON.today],['hot','Hot list',ICON.hot],['leads','Leads',ICON.leads],['ren','Renewals',ICON.ren],['more','Me',ICON.more]];
   if(!S.tab||!tabs.some(t=>t[0]===S.tab))S.tab=tabs[0][0];
+  const hotCt=Object.values(S.hot).filter(x=>x.status==='open'&&x.when<=today()).length;
   const lateCt=Object.values(S.leads).filter(l=>leadMeta(l).due&&(isMgr()||l.by===m.name)).length;
   app.innerHTML='<header class="top"><div class="brand">K-Fit Club<small>'+esc(fdLong(today()))+'</small></div><div class="who"><div style="min-width:0"><b>'+esc(m.name)+'</b><span>'+esc(m.role)+'</span></div><div class="av">'+esc(ini(m.name))+'</div></div></header>'
    +(S.offline?'<div class="banner">No internet. Showing the last data you had. Changes will not save until you are back online.</div>':'')
-   +'<main id="main"></main><nav><div class="in">'+tabs.map(t=>'<button data-a="tab" data-v="'+t[0]+'" aria-current="'+(S.tab===t[0])+'">'+t[2]+t[1]+(t[0]==='leads'&&lateCt?'<span class="badge">'+(lateCt>99?'99+':lateCt)+'</span>':'')+'</button>').join('')+'</div></nav>'
-   +((S.tab==='leads')&&S.canWrite?'<button class="fab" data-a="newlead">+ New lead</button>':'');
+   +'<main id="main"></main><nav><div class="in">'+tabs.map(t=>'<button data-a="tab" data-v="'+t[0]+'" aria-current="'+(S.tab===t[0])+'">'+t[2]+t[1]+(t[0]==='leads'&&lateCt?'<span class="badge">'+(lateCt>99?'99+':lateCt)+'</span>':'')+(t[0]==='hot'&&hotCt?'<span class="badge">'+(hotCt>99?'99+':hotCt)+'</span>':'')+'</button>').join('')+'</div></nav>'
+   +((S.tab==='leads')&&S.canWrite?'<button class="fab" data-a="newlead">+ New lead</button>':'')+((S.tab==='hot')&&S.canWrite?'<button class="fab" data-a="newhot">+ Hot list</button>':'');
   renderMain();
 }
 function fdLong(iso){const d=new Date(iso+'T00:00:00');return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()}
@@ -180,6 +189,7 @@ function renderMain(){
   if(t==='today')el.innerHTML=viewToday();
   else if(t==='team')el.innerHTML=viewTeam();
   else if(t==='rep')el.innerHTML=viewReports();
+  else if(t==='hot')el.innerHTML=viewHot();
   else if(t==='leads'){el.innerHTML=viewLeadsShell();renderLeadList()}
   else if(t==='ren'){el.innerHTML=viewRenShell();renderRenList()}
   else el.innerHTML=viewMore();
@@ -209,6 +219,7 @@ function viewToday(){
   const last=mine.slice().sort((a,b)=>b.ts-a.ts)[0];
   return '<div class="stack"><h2>Hi '+esc(m.name.replace(/^(Mr|Ms)\s+/,''))+', your day so far</h2>'+(last?'<div class="muted small">Last logged '+ago(last.ts)+'</div>':'<div class="muted small">Nothing logged yet today. Tap + after each call or chat.</div>')+'</div>'
    +'<div class="grid2">'+KINDS.filter(k=>k[0]!=='walkin'||S.targets.walkin||c.walkin).map(k=>metricCard(k[0],k[1],c[k[0]],S.targets[k[0]],true)).join('')+(!(S.targets.walkin||c.walkin)?metricCard('walkin','Walk-ins',c.walkin,0,true):'')+'</div>'
+   +alertsCard()+hotGlance()
    +'<div class="card stack"><h3>Your queue</h3>'
    +'<button class="row between" data-a="go-leads" data-v="due"><span>Follow-ups due today</span><b>'+due+'</b></button>'
    +'<button class="row between" data-a="go-leads" data-v="overdue"><span>Overdue follow-ups</span><b class="'+(late?'late':'')+'">'+late+'</b></button>'
@@ -229,6 +240,7 @@ function viewTeam(){
   const feed=S.acts.slice().sort((a,b)=>b.ts-a.ts).slice(0,15);
   return '<div class="row between"><button class="plus" data-a="tdate" data-v="-1" aria-label="Previous day">‹</button><div style="text-align:center"><h2>'+(d===t?'Today':fdLong(d))+'</h2>'+(d===t?'<div class="muted small">'+fdLong(d)+'</div>':'<button class="small" data-a="tdate-today" style="color:var(--accent);font-weight:600">Back to today</button>')+'</div><button class="plus" data-a="tdate" data-v="1" aria-label="Next day" '+(d>=t?'disabled style="opacity:.3"':'')+'>›</button></div>'
    +'<div class="grid2">'+metricCard('c','Calls',tot.call,0)+metricCard('c','Counselling',tot.counselling,0)+metricCard('c','WhatsApp leads',tot.whatsapp,0)+metricCard('c','Renewal calls',tot.renewal,0)+metricCard('c','Memberships sold',tot.sale,0)+metricCard('c','Renewed',tot.renewed,0)+'</div>'
+   +alertsCard()+hotGlance()
    +'<h3>Team</h3>'+(staff.length?staff.map(s=>staffCard(s,d)).join(''):'<div class="card muted">No staff yet.</div>')
    +'<div class="card stack"><h3>Queue health (all leads)</h3><div class="row between"><span>Follow-ups due today</span><b>'+dueAll+'</b></div><div class="row between"><span>Overdue follow-ups</span><b class="'+(lateAll?'late':'')+'">'+lateAll+'</b></div><div class="row between"><span>Renewals not yet contacted</span><b class="'+(rNot?'late':'')+'">'+rNot+'</b></div></div>'
    +'<div class="card stack"><h3>Live feed</h3>'+(feed.length?'<div class="tl">'+feed.map(a=>'<div class="e"><time>'+(a.date===t?hm(a.ts):fd(a.date))+'</time><div style="min-width:0;overflow-wrap:anywhere"><b>'+esc((S.staff[a.staff]||{}).name||'?')+'</b> · '+describe(a)+'</div></div>').join('')+'</div>':'<div class="muted">No activity logged yet.</div>')+'</div>';
@@ -303,7 +315,7 @@ function viewMore(){
   if(isOwner()&&!window.KFIT_DEMO){
     if(S.sheetSt===undefined){S.sheetSt=null;KNet.api('GET','/api/sheet-status').then(r=>{S.sheetSt=r;if(S.tab==='more'&&!S.sheet)dirty()}).catch(()=>{S.sheetSt={enabled:false}})}
     const ss=S.sheetSt,ls=ss&&ss.last;
-    h+='<div class="card stack"><h3>Copy to Google Sheet</h3><div class="small muted">'+(ss&&ss.enabled?'Everything staff log is copied to your Google Sheet automatically, a couple of minutes after each change.':'Not set up yet. Follow GOOGLE-SHEET.md to turn this on.')+'</div>'+(ls?'<div class="small">Last copy: '+(ls.ok?'<b>worked</b>':'<b style="color:var(--bad,#B42318)">failed</b>')+' · '+esc(ls.msg||'')+' · '+esc(new Date(ls.at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}))+'</div>':'')+(ss&&ss.enabled?'<button class="btn sec" data-a="sheet-sync">Copy to Google Sheet now</button>':'')+'</div>';
+    h+='<div class="card stack"><h3>Copy to Google Sheet</h3><div class="small muted">'+(ss&&ss.enabled?'Everything staff log is copied to your Google Sheet, and the Hot list to your Google Calendar, automatically a couple of minutes after each change.':'Not set up yet. Follow GOOGLE-SHEET.md to turn this on.')+'</div>'+(ls?'<div class="small">Last copy: '+(ls.ok?'<b>worked</b>':'<b style="color:var(--bad,#B42318)">failed</b>')+' · '+esc(ls.msg||'')+' · '+esc(new Date(ls.at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}))+'</div>':'')+(ss&&ss.enabled?'<button class="btn sec" data-a="sheet-sync">Copy to Google Sheet now</button>':'')+'</div>';
   }
   if(isMgr())h+='<div class="card stack"><h3>Excel / Google Sheet data</h3><div class="small muted">Download everything in the same columns as your sheet, or add new rows from a sheet. In Google Sheets use File, Download, Microsoft Excel (.xlsx), then pick the file here.</div>'+(S.dl?'<button class="btn" data-a="xl-all">Download all data (Excel)</button>':'')+'<label class="btn sec" style="cursor:pointer">Import from Excel or CSV<input type="file" id="imp-file" accept=".xlsx,.xls,.csv" hidden></label>'+previewCard()+impLine()+'</div>';
   if(!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)&&!navigator.standalone)h+='<div class="card stack"><h3>Put this app on your phone</h3>'+(S.installEv?'<button class="btn" data-a="install">Install K-Fit Staff</button>':'<div class="small"><b>Android:</b> open in Chrome, tap the ⋮ menu, then Install app (or Add to Home screen).<br><b>iPhone:</b> open in Safari, tap Share, then Add to Home Screen.</div>')+'</div>';
@@ -332,6 +344,7 @@ function viewReports(){
    +'<div class="card stack"><h3>Staff activity</h3><div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:430px"><thead><tr><th style="text-align:left;padding:6px 8px;font-size:12px;color:var(--muted)">Name</th><th '+th+'>Calls</th><th '+th+'>Counsel</th><th '+th+'>WhatsApp</th><th '+th+'>Renewal</th><th '+th+'>Walk-in</th><th '+th+'>Sold</th></tr></thead><tbody>'
    +rows.map(r=>'<tr style="border-top:1px solid var(--line)"><td style="padding:8px;white-space:nowrap"><b>'+esc(r.s.name)+'</b><div class="muted small">'+cap(r.s.role)+'</div></td><td '+td+'>'+r.c.call+'</td><td '+td+'>'+r.c.counselling+'</td><td '+td+'>'+r.c.whatsapp+'</td><td '+td+'>'+r.c.renewal+'</td><td '+td+'>'+r.c.walkin+'</td><td '+td+'>'+r.c.sale+'</td></tr>').join('')
    +'<tr style="border-top:2px solid var(--line);font-weight:700"><td style="padding:8px">Total</td><td '+td+'>'+tot.call+'</td><td '+td+'>'+tot.counselling+'</td><td '+td+'>'+tot.whatsapp+'</td><td '+td+'>'+tot.renewal+'</td><td '+td+'>'+tot.walkin+'</td><td '+td+'>'+tot.sale+'</td></tr></tbody></table></div></div>'
+   +hotReport(from,t,staff)
    +'<div class="card stack"><h3>Leads today</h3><div class="row between"><span>New leads</span><b>'+todayLeads.length+'</b></div><div class="row between"><span>Walk-ins</span><b>'+todayLeads.filter(l=>l.status==='Walk-in').length+'</b></div><div class="row between"><span>WhatsApp chat or call</span><b>'+todayLeads.filter(l=>/^Whatsapp/.test(l.status)).length+'</b></div><div class="row between"><span>Phone calls</span><b>'+todayLeads.filter(l=>l.status==='Call').length+'</b></div></div>'
    +'<div class="card stack"><h3>All leads · '+leads.length+'</h3><div class="row between"><span>Open (still to convert)</span><b>'+openN+'</b></div><div class="row between"><span>Memberships sold</span><b>'+sold+' <span class="muted small">('+(leads.length?Math.round(sold/leads.length*100):0)+'%)</span></b></div>'
    +stArr.map(x=>'<div class="stack" style="gap:3px"><div class="row between small"><span>'+esc(x[0])+'</span><b>'+x[1]+'</b></div><div class="bar"><i class="'+(x[0]==='Membership Sold'?'full':'')+'" style="width:'+Math.round(x[1]/mx*100)+'%"></i></div></div>').join('')+'</div>'
@@ -464,7 +477,7 @@ function renderSheet(fromRender){
   if(fromRender&&keep&&!s.refresh)return;
   s.refresh=false;
   let body='';
-  if(s.type==='lead')body=sheetLead(s);else if(s.type==='ren')body=sheetRen(s);else if(s.type==='newlead')body=sheetNew(s);else if(s.type==='staffday')body=sheetStaffDay(s);else if(s.type==='staffedit')body=sheetStaffEdit(s);
+  if(s.type==='hot')body=sheetHot(s);else if(s.type==='newhot')body=sheetNewHot(s);else if(s.type==='lead')body=sheetLead(s);else if(s.type==='ren')body=sheetRen(s);else if(s.type==='newlead')body=sheetNew(s);else if(s.type==='staffday')body=sheetStaffDay(s);else if(s.type==='staffedit')body=sheetStaffEdit(s);else if(s.type==='ai')body=sheetAi(s);
   lay.innerHTML='<div class="scrim" data-a="scrim"><div class="sheet" role="dialog" aria-modal="true">'+body+'</div></div>';
   const n=lay.querySelector('.sheet');if(n)n.scrollTop=sc;
 }
@@ -489,6 +502,7 @@ function sheetLead(s){
    +'<label class="f">Next follow-up'+(d.next?': '+fd(d.next):'')+'</label><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+nexts.map(n=>'<button class="chip" data-a="d-next" data-v="'+addDays(today(),n[1])+'" aria-pressed="'+(d.next===addDays(today(),n[1]))+'">'+n[0]+'</button>').join('')+'</div><input type="date" id="d-nextdate" data-in="d-nextdate" value="'+esc(d.next||'')+'">'
    +'<label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="What did they say?">'+esc(d.note||'')+'</textarea></label>'
    +'<button class="btn" data-a="save-lead" '+(S.canWrite?'':'disabled')+'>Save update</button>'
+   +hotLinkCard('lead',l)
    +'<div class="card stack"><h3>Quick replies</h3><select id="r-pick" data-in="r-pick"><option value="">Choose a ready message…</option>'+REPLIES.map((r,i)=>'<option value="'+i+'" '+(String(d.reply)===String(i)?'selected':'')+'>'+esc(r.q)+'</option>').join('')+'</select>'
    +(rp?'<div class="small" style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(rp.a)+'</div><div class="row" style="gap:14px"><button data-a="copy-text" data-v="'+d.reply+'" style="color:var(--accent);font-weight:600">Copy message</button>'+(l.phone?'<a href="https://wa.me/91'+esc(l.phone)+'?text='+encodeURIComponent(rp.a)+'" target="_blank" rel="noopener" data-act="whatsapp">Send on WhatsApp</a>':'')+'</div>':'')+'</div>'
    +'<details class="card"><summary style="font-weight:600">Edit details</summary><div class="stack" style="margin-top:10px"><label class="f">Name<input id="e-name" data-in="e-name" value="'+esc(e.name)+'"></label><label class="f">Phone<input id="e-phone" data-in="e-phone" inputmode="numeric" maxlength="10" value="'+esc(e.phone)+'"></label><label class="f">Plan<input id="e-plan" data-in="e-plan" value="'+esc(e.plan)+'" placeholder="e.g. 3 Months"></label><label class="f">Assigned to'+selBy(e.by,'e-by')+'</label><label class="f">Remark<textarea id="e-remarks" data-in="e-remarks">'+esc(e.remarks)+'</textarea></label><div class="small muted">Tap “Save update” to keep the changes.</div></div></details>';
@@ -504,6 +518,7 @@ function sheetRen(s){
    +'<label class="f">Next follow-up<input type="date" id="e-next" data-in="e-next" value="'+esc(e.next||'')+'"></label><label class="f">Plan offered<input id="e-offer" data-in="e-offer" value="'+esc(e.offer||'')+'" placeholder="e.g. 6 months, 12k"></label>'
    +'<label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="What did they say?">'+esc(d.note||'')+'</textarea></label>'
    +'<button class="btn" data-a="save-ren" '+(S.canWrite?'':'disabled')+'>Save update</button>'
+   +hotLinkCard('renewal',r)
    +'<details class="card"><summary style="font-weight:600">Edit membership details</summary><div class="stack" style="margin-top:10px"><label class="f">Plan<input id="e-plan" data-in="e-plan" value="'+esc(e.plan)+'"></label><label class="f">Expiry date<input type="date" id="e-expiry" data-in="e-expiry" value="'+esc(e.expiry)+'"></label><div class="grid2"><label class="f">Amount (₹)<input type="number" id="e-amount" data-in="e-amount" inputmode="numeric" value="'+esc(e.amount)+'"></label><label class="f">Paid (₹)<input type="number" id="e-paid" data-in="e-paid" inputmode="numeric" value="'+esc(e.paid)+'"></label></div><label class="f">Assigned to'+selBy(e.by,'e-by')+'</label><div class="small muted">Tap “Save update” to keep the changes.</div></div></details>';
 }
 function sheetNew(s){
@@ -527,6 +542,164 @@ function sheetStaffEdit(s){
   return sheetHd(s.id?'Edit staff':'Add staff')+'<label class="f">Name<input id="s-name" data-in="s-name" value="'+esc(d.name||'')+'"></label><label class="f">Role</label>'+chipRow(ROLES.map(cap),cap(d.role||'receptionist'),'s-role')
    +'<label class="f">'+(s.id?'New 4-digit PIN (leave empty to keep the current one)':'4-digit PIN')+'<input id="s-pin" data-in="s-pin" inputmode="numeric" maxlength="4" autocomplete="off" value="'+esc(d.pin||'')+'"></label><label class="row small" style="gap:8px"><input type="checkbox" id="s-active" data-in="s-active" '+(d.active!==false?'checked':'')+' style="width:18px;height:18px"> Active (can sign in)</label>'
    +'<div id="n-err" class="late small" role="alert">'+esc(d.err||'')+'</div><button class="btn" data-a="staff-save">Save</button>';
+}
+
+
+/* ---------- hot list: who is expected to visit, join, pay, bring friends, upgrade or freeze ---------- */
+const staffName=id=>(S.staff[id]||{}).name||'';
+function hotMatch(x,f){const t=today(),o=x.status==='open';switch(f){case'today':return o&&x.when===t;case'soon':return o&&x.when>t&&x.when<=addDays(t,7);case'late':return o&&x.when<t;case'done':return !o&&(x.closedAt||0)>Date.now()-30*864e5;default:return o}}
+function hotGlance(){
+  const t=today();const open=Object.values(S.hot).filter(x=>x.status==='open'&&x.when<=t);const td=open.filter(x=>x.when===t),late=open.filter(x=>x.when<t).length;
+  return '<div class="card stack"><div class="row between"><h3>Hot list today</h3><button class="chip" data-a="tab" data-v="hot">Open</button></div>'
+   +(td.length||late?'<div class="mini">'+HOT.filter(x=>td.some(h=>h.type===x[0])).map(x=>'<span>'+x[1]+' <b>'+td.filter(h=>h.type===x[0]).length+'</b></span>').join('')+(late?'<span class="late">Update needed <b>'+late+'</b></span>':'')+'</div>'
+    +td.slice(0,4).map(x=>'<button class="row between small" data-a="open-hot" data-v="'+esc(x.id)+'"><span><b>'+esc(x.name)+'</b> · '+HOTL[x.type]+'</span><span class="muted">'+esc(staffName(x.by))+'</span></button>').join('')+(td.length>4?'<div class="muted small">and '+(td.length-4)+' more</div>':'')
+    :'<div class="muted small">Nothing expected today. Add people who will visit, join or pay.</div>')+'</div>';
+}
+function viewHot(){
+  const t=today(),all=Object.values(S.hot);
+  const base=all.filter(x=>(!S.ht||x.type===S.ht)&&(!S.hmine||x.by===S.me));
+  const cnt={};HF.forEach(f=>cnt[f[0]]=base.filter(x=>hotMatch(x,f[0])).length);
+  const tdAll=all.filter(x=>x.status==='open'&&x.when===t);
+  let arr=base.filter(x=>hotMatch(x,S.hf));
+  if(S.hf==='done')arr.sort((a,b)=>(b.closedAt||0)-(a.closedAt||0));else if(S.hf==='late'||S.hf==='soon'||S.hf==='all')arr.sort((a,b)=>a.when.localeCompare(b.when)||(a.createdAt||0)-(b.createdAt||0));else arr.sort((a,b)=>(a.time||'~').localeCompare(b.time||'~')||(a.createdAt||0)-(b.createdAt||0));
+  let list='';
+  if(!arr.length)list='<div class="card muted">Nothing here. Tap “+ Hot list” to add someone who is expected.</div>';
+  else if(S.hf==='soon'||S.hf==='all'){let last='';arr.forEach(x=>{if(x.when!==last){last=x.when;list+='<div class="muted small" style="font-weight:600;margin-top:6px">'+(x.when===t?'Today':x.when===addDays(t,1)?'Tomorrow':fdLong(x.when))+'</div>'}list+=hotItem(x)})}
+  else list=arr.slice(0,60).map(hotItem).join('');
+  return '<div class="stack"><h2>Hot list</h2><div class="muted small">Everyone who is expected to visit, join, pay, bring friends, upgrade or freeze. Everyone on the team can see and update it.</div></div>'
+   +'<div class="chips">'+HOT.map(x=>{const n=tdAll.filter(h=>h.type===x[0]).length;return '<button class="chip" data-a="ht" data-v="'+x[0]+'" aria-pressed="'+(S.ht===x[0])+'">'+x[1]+(n?'<b>'+n+'</b>':'')+'</button>'}).join('')+'</div>'
+   +'<div class="chips">'+HF.map(f=>'<button class="chip" data-a="hf" data-v="'+f[0]+'" aria-pressed="'+(S.hf===f[0])+'">'+f[1]+'<b>'+cnt[f[0]]+'</b></button>').join('')+'</div>'
+   +'<label class="row small" style="gap:8px"><input type="checkbox" data-in="hmine" '+(S.hmine?'checked':'')+' style="width:18px;height:18px"> Only the ones I am handling</label>'
+   +'<div class="stack" id="hlist">'+list+'</div>';
+}
+function hotItem(x){
+  const t=today(),o=x.status==='open',late=o&&x.when<t;
+  const when=x.when===t?'Today':x.when===addDays(t,1)?'Tomorrow':fd(x.when);
+  const st=!o?'<span class="pill '+(x.status==='done'?'p-won':'p-lost')+'">'+({done:'Happened',missed:'Did not happen',cancelled:'Cancelled'}[x.status]||x.status)+'</span>':late?'<span class="pill p-bad">'+diff(t,x.when)+'d ago · update</span>':'<span class="pill p-open">'+when+(x.time?' · '+esc(x.time):'')+'</span>';
+  const nn=(x.notes||[]).filter(n=>!n.sys);
+  return '<button class="item" data-a="open-hot" data-v="'+esc(x.id)+'"><div class="row between"><span class="t">'+esc(x.name)+'</span>'+st+'</div><div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill '+HOT_PILL[x.type]+'">'+HOTL[x.type]+'</span>'+(x.amount?'<span class="small"><b>'+rupee(x.amount)+'</b></span>':'')+'</div>'
+   +(x.detail?'<div class="r">'+esc(x.detail)+'</div>':'')+(nn.length?'<div class="small muted" style="overflow-wrap:anywhere">Latest: '+esc(staffName(nn[nn.length-1].by).split(' ').pop())+': '+esc(nn[nn.length-1].text).slice(0,80)+'</div>':'')
+   +'<div class="small muted row between"><span>'+(staffName(x.by)?'Handled by '+esc(staffName(x.by)):'Nobody assigned')+'</span><span>'+(nn.length?nn.length+' note'+(nn.length>1?'s':''):'')+'</span></div></button>';
+}
+function hotLinkCard(kind,r){
+  const items=Object.values(S.hot).filter(x=>x.status==='open'&&x.refType===kind&&x.refId===r.id);
+  return '<div class="card stack"><h3>Hot list</h3>'+(items.length?items.map(x=>'<button class="row between small" data-a="open-hot" data-v="'+esc(x.id)+'"><span><b>'+HOTL[x.type]+'</b> · '+(x.when===today()?'today':fd(x.when))+(x.detail?' · '+esc(x.detail):'')+'</span><span class="muted">'+esc(staffName(x.by))+'</span></button>').join(''):'<div class="muted small">Nothing expected from this person yet.</div>')+'<button class="btn sec" data-a="hot-from" data-v="'+kind+':'+esc(r.id)+'">+ Add: visiting, joining, paying…</button></div>';
+}
+function hotReport(from,t,staff){
+  const items=Object.values(S.hot).filter(x=>x.when>=from&&x.when<=t&&x.status!=='cancelled');
+  const cn=(a,s)=>a.filter(x=>x.status===s).length;
+  const rate=a=>{const d=cn(a,'done'),m=cn(a,'missed');return d+m?Math.round(d/(d+m)*100)+'%':'—'};
+  const th='style="text-align:right;padding:6px 8px;font-size:12px;color:var(--muted);white-space:nowrap"',td='style="text-align:right;padding:8px;font-variant-numeric:tabular-nums"';
+  const row=(lab,a,bold)=>'<tr style="border-top:1px solid var(--line)'+(bold?';font-weight:700':'')+'"><td style="padding:8px;white-space:nowrap">'+lab+'</td><td '+td+'>'+a.length+'</td><td '+td+'>'+cn(a,'done')+'</td><td '+td+'>'+cn(a,'missed')+'</td><td '+td+'>'+cn(a,'open')+'</td><td '+td+'>'+rate(a)+'</td></tr>';
+  const people=Object.values(S.staff).filter(x=>x.active&&items.some(i=>i.by===x.id));
+  return '<div class="card stack"><h3>Hot list results</h3><div class="muted small">Of the people who were expected in this period, how many really came, joined or paid.</div><div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:360px"><thead><tr><th style="text-align:left;padding:6px 8px;font-size:12px;color:var(--muted)"></th><th '+th+'>Expected</th><th '+th+'>Happened</th><th '+th+'>No</th><th '+th+'>Waiting</th><th '+th+'>Rate</th></tr></thead><tbody>'
+   +HOT.filter(x=>items.some(i=>i.type===x[0])).map(x=>row(x[1],items.filter(i=>i.type===x[0]))).join('')+row('All',items,true)
+   +'</tbody></table></div>'+(people.length?'<h3 style="margin-top:6px">By person handling it</h3><div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:360px"><tbody>'+people.map(x=>row(esc(x.name),items.filter(i=>i.by===x.id))).join('')+'</tbody></table></div>':'')+'</div>';
+}
+const selStaffId=(cur,id)=>'<select id="'+id+'" data-in="'+id+'">'+Object.values(S.staff).filter(x=>x.active||x.id===cur).sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)||a.name.localeCompare(b.name)).map(x=>'<option value="'+esc(x.id)+'" '+(x.id===cur?'selected':'')+'>'+esc(x.name)+' ('+x.role+')</option>').join('')+'</select>';
+const whenChips=(cur,act)=>'<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+[['Today',0],['Tomorrow',1],['In 3 days',3],['Next week',7]].map(n=>'<button class="chip" data-a="'+act+'" data-v="'+addDays(today(),n[1])+'" aria-pressed="'+(cur===addDays(today(),n[1]))+'">'+n[0]+'</button>').join('')+'</div>';
+function sheetNewHot(s){
+  const d=s.d;
+  return sheetHd('Add to Hot list')
+   +'<label class="f">What is expected?</label><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+HOT.map(x=>'<button class="chip" data-a="h-type" data-v="'+x[0]+'" aria-pressed="'+(d.type===x[0])+'">'+x[1]+'</button>').join('')+'</div>'
+   +(d.refId?'<div class="card stack"><div class="row between"><span><b>'+esc(d.name)+'</b><div class="muted small">'+esc(d.phone||'No number')+' · '+(d.refType==='renewal'?'membership record':'lead record')+'</div></span><button class="chip" data-a="h-unlink">Change</button></div></div>'
+    :'<label class="f">Find a lead or member<input id="h-q" data-in="h-q" type="search" placeholder="Type name or phone" autocomplete="off"></label><div id="h-res" class="stack"></div>'
+     +'<div class="grid2"><label class="f">Name<input id="n-name" data-in="n-name" value="'+esc(d.name||'')+'" autocomplete="off"></label><label class="f">Phone<input id="n-phone" data-in="n-phone" inputmode="numeric" maxlength="10" value="'+esc(d.phone||'')+'"></label></div>')
+   +'<label class="f">When'+(d.when?': '+fd(d.when):'')+'</label>'+whenChips(d.when,'h-when')+'<div class="grid2"><input type="date" id="h-whendate" data-in="h-whendate" value="'+esc(d.when||'')+'" min="'+today()+'"><input id="h-time" data-in="h-time" placeholder="Time, e.g. 6 PM" value="'+esc(d.time||'')+'"></div>'
+   +'<label class="f">Details<input id="h-detail" data-in="h-detail" placeholder="'+esc(HOT_HINT[d.type||'other'])+'" value="'+esc(d.detail||'')+'"></label>'
+   +(['join','pay','upgrade'].includes(d.type)?'<label class="f">Amount (₹), if known<input id="h-amt" data-in="h-amt" type="number" inputmode="numeric" value="'+esc(d.amount||'')+'"></label>':'')
+   +'<label class="f">Who is handling this?'+selStaffId(d.by,'h-by')+'</label>'
+   +'<label class="f">Note<textarea id="d-note" data-in="d-note" placeholder="Anything the team should know">'+esc(d.note||'')+'</textarea></label>'
+   +'<div id="n-err" class="late small" role="alert">'+esc(d.err||'')+'</div><button class="btn" data-a="save-hot">Add to Hot list</button>';
+}
+function sheetHot(s){
+  const x=S.hot[s.id];if(!x)return sheetHd('Removed');const d=s.d,e=d.e,o=x.status==='open',t=today();
+  const link=x.refType==='lead'&&S.leads[x.refId]?'<button class="small" data-a="open-lead" data-v="'+esc(x.refId)+'" style="color:var(--accent);font-weight:600;text-align:left">Open lead record</button>':x.refType==='renewal'&&S.ren[x.refId]?'<button class="small" data-a="open-ren" data-v="'+esc(x.refId)+'" style="color:var(--accent);font-weight:600;text-align:left">Open membership record</button>':'';
+  const notes=(x.notes||[]).map(n=>'<div class="'+(n.sys?'muted ':'')+'small" style="overflow-wrap:anywhere"><b>'+esc(staffName(n.by)||'?')+'</b> <span class="muted">'+(n.ts?fd(ymd(new Date(n.ts)))+' '+hm(n.ts):'')+'</span><div'+(n.sys?' style="font-style:italic"':'')+'>'+esc(n.text)+'</div></div>').join('');
+  const wa=x.phone?'<a href="https://wa.me/91'+esc(x.phone)+'?text='+encodeURIComponent((HOT_MSG[x.type]||HOT_MSG.other)(x.name.split(' ')[0]))+'" target="_blank" rel="noopener">Send a reminder on WhatsApp</a>':'';
+  return sheetHd(x.name,'<div class="row" style="margin-top:4px;flex-wrap:wrap"><span class="pill '+HOT_PILL[x.type]+'">'+HOTL[x.type]+'</span>'+(o?(x.when<t?'<span class="pill p-bad">'+diff(t,x.when)+' days ago · update</span>':'<span class="pill p-open">'+(x.when===t?'Today':fd(x.when))+(x.time?' · '+esc(x.time):'')+'</span>'):'<span class="pill '+(x.status==='done'?'p-won':'p-lost')+'">'+({done:'Happened',missed:'Did not happen',cancelled:'Cancelled'}[x.status]||x.status)+'</span>')+'</div>')
+   +'<div class="card stack">'+contactRow(x.phone)+'<dl class="kv"><dt>Expected</dt><dd>'+fd(x.when)+(x.time?' · '+esc(x.time):'')+'</dd><dt>Details</dt><dd>'+esc(x.detail||'—')+'</dd>'+(x.amount?'<dt>Amount</dt><dd>'+rupee(x.amount)+'</dd>':'')+'<dt>Handled by</dt><dd>'+esc(staffName(x.by)||'—')+'</dd><dt>Added by</dt><dd>'+esc(staffName(x.createdBy)||'—')+(x.createdAt?' · '+ago(x.createdAt):'')+'</dd></dl>'+link+(o&&wa?wa:'')+'</div>'
+   +(o?'<div class="card stack"><h3>'+HOT_ASK[x.type]+'</h3><div class="grid2"><button class="btn" data-a="hot-done" '+(S.canWrite?'':'disabled')+'>Yes</button><button class="btn sec" data-a="hot-missed" '+(S.canWrite?'':'disabled')+'>No</button></div>'
+     +'<div class="small muted">'+(x.type==='visit'?'Yes adds one walk-in to your count. ':'')+(x.type==='join'&&x.refType==='lead'?'Yes marks the lead as Membership Sold. ':'')+'The note below is saved with your answer.</div></div>':'<div class="card stack"><div class="small">Closed '+(x.closedAt?ago(x.closedAt)+' by '+esc(staffName(x.closedBy)):'')+'</div><button class="btn sec" data-a="hot-reopen">Reopen</button></div>')
+   +'<div class="card stack"><h3>Notes and updates</h3>'+(notes||'<div class="muted small">No notes yet.</div>')+'<label class="f">Add a note<textarea id="d-note" data-in="d-note" placeholder="e.g. Called, he will come at 7 with his friend">'+esc(d.note||'')+'</textarea></label><button class="btn sec" data-a="hot-note">Save note</button></div>'
+   +(o?'<div class="card stack"><h3>Move to another day</h3>'+whenChips(d.move,'h-move')+'<input type="date" id="h-movedate" data-in="h-movedate" value="'+esc(d.move||'')+'" min="'+t+'"><button class="btn sec" data-a="hot-move">Move</button></div>':'')
+   +'<details class="card"><summary style="font-weight:600">Edit details</summary><div class="stack" style="margin-top:10px"><label class="f">What is expected?</label><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+HOT.map(y=>'<button class="chip" data-a="hot-type" data-v="'+y[0]+'" aria-pressed="'+(e.type===y[0])+'">'+y[1]+'</button>').join('')+'</div>'
+   +'<label class="f">Name<input id="e-name" data-in="e-name" value="'+esc(e.name)+'"></label><label class="f">Phone<input id="e-phone" data-in="e-phone" inputmode="numeric" maxlength="10" value="'+esc(e.phone)+'"></label><label class="f">Details<input id="e-detail" data-in="e-detail" value="'+esc(e.detail)+'"></label><div class="grid2"><label class="f">Amount (₹)<input id="e-amount" data-in="e-amount" type="number" inputmode="numeric" value="'+esc(e.amount)+'"></label><label class="f">Time<input id="e-time" data-in="e-time" value="'+esc(e.time)+'"></label></div><label class="f">Handled by'+selStaffId(e.by,'e-by')+'</label><div id="n-err" class="late small" role="alert">'+esc(d.err||'')+'</div><button class="btn" data-a="hot-edit">Save changes</button>'
+   +(o?'<button class="btn sec" data-a="hot-cancel" style="color:var(--bad)">Cancel this item</button>':'')+'</div></details>';
+}
+function hotSearch(q){
+  const el=$('#h-res');if(!el)return;q=(q||'').trim().toLowerCase();if(q.length<2){el.innerHTML='';return}
+  const m=[];Object.values(S.leads).forEach(l=>{if((l.name+' '+l.phone).toLowerCase().includes(q))m.push(['lead',l.id,l.name,l.phone,'Lead · '+l.status])});
+  Object.values(S.ren).forEach(r=>{if((r.name+' '+r.phone).toLowerCase().includes(q))m.push(['renewal',r.id,r.name,r.phone,(r.kind==='PT'?'PT member':'Member')+' · '+fd(r.expiry)])});
+  el.innerHTML=m.slice(0,6).map(x=>'<button class="item" data-a="h-pick" data-v="'+x[0]+':'+esc(x[1])+'"><div class="row between"><span class="t">'+esc(x[2])+'</span><span class="small muted">'+esc(x[3]||'')+'</span></div><div class="small muted">'+esc(x[4])+'</div></button>').join('')+(m.length?'':'<div class="muted small">No match. Type the name and phone below instead.</div>');
+}
+async function saveHot(){
+  const s=S.sheet,d=s.d,m=me();const err=x=>{d.err=x;$('#n-err').textContent=x};
+  if(!d.type)return err('Choose what is expected.');
+  if(!(d.name||'').trim())return err('Enter the person\'s name.');
+  if(d.phone&&!/^\d{10}$/.test(d.phone))return err('Phone must be 10 digits.');
+  if(!d.when)return err('Choose the date.');
+  if(d.when<today())return err('That date has passed.');
+  const id=newId('H'),now=Date.now();
+  const x={id,type:d.type,name:d.name.trim(),phone:d.phone||'',refType:d.refType||'',refId:d.refId||'',when:d.when,time:(d.time||'').trim(),detail:(d.detail||'').trim(),amount:d.amount?Number(d.amount):0,by:d.by||m.id,status:'open',createdBy:m.id,createdAt:now,updatedAt:now,notes:[]};
+  if((d.note||'').trim())x.notes.push({by:m.id,ts:now,text:d.note.trim()});
+  if(await guard(()=>S.db.doc('hot/'+id).set(x))){toast('Added to Hot list');S.tab='hot';S.hf=d.when===today()?'today':'soon';S.ht='';closeSheet()}
+}
+async function hotClose(status,xo,txt0,quiet){
+  const s=S.sheet||{d:{}},x=xo||S.hot[s.id],d=s.d,m=me();if(!x)return false;const txt=txt0!=null?txt0:(d.note||'').trim(),now=Date.now();
+  const notes=(x.notes||[]).slice();if(txt)notes.push({by:m.id,ts:now,text:txt});notes.push({by:m.id,ts:now,text:{done:'Happened',missed:'Did not happen',cancelled:'Cancelled'}[status],sys:true});
+  const ok=await guard(async()=>{
+    await S.db.doc('hot/'+x.id).update({status,closedAt:now,closedBy:m.id,notes:notes.slice(-60),updatedAt:now});
+    if(status==='done'&&x.type==='visit')await logAct({kind:'walkin',refType:x.refType,refId:x.refId,refName:x.name,note:'Came as expected (Hot list)'});
+    const l=x.refType==='lead'?S.leads[x.refId]:null;
+    if(status==='done'&&x.type==='join'&&l&&l.status!=='Membership Sold'){
+      await S.db.doc('leads/'+l.id).update({status:'Membership Sold',lastTouch:now,lastBy:m.name,hist:(l.hist||[]).concat([stamp(null,'Joined (Hot list)')])});
+      await logAct({kind:'note',refType:'lead',refId:l.id,refName:l.name,toStatus:'Membership Sold',note:'Joined as expected (Hot list)'});
+    }
+  });
+  if(ok&&!quiet){toast(status==='done'?'Marked as happened':status==='missed'?'Marked as did not happen':'Cancelled');d.note='';closeSheet()}
+  return ok;
+}
+
+/* ---------- missing updates + AI helper ---------- */
+const AIQ=['What is planned today?','What did we miss or not update?','Who is coming this week to join or pay?','Which leads need a call today?','Give me a short end-of-day report'];
+function missingFor(st){const t=today();return{h:Object.values(S.hot).filter(x=>x.status==='open'&&x.when<t&&x.by===st.id).sort((a,b)=>a.when.localeCompare(b.when)),l:Object.values(S.leads).filter(x=>leadMeta(x).late&&x.by===st.name)}}
+function remindText(st){const k=missingFor(st),first=st.name.replace(/^(Mr|Ms)\s+/,'');
+  return 'Hi '+first+', please update these in the K-Fit app today:\n'+(k.h.length?'Hot list: '+k.h.slice(0,6).map(x=>x.name+' ('+HOTL[x.type]+', '+fd(x.when)+')').join(', ')+(k.h.length>6?' and '+(k.h.length-6)+' more':'')+'\n':'')+(k.l.length?k.l.length+' leads have an overdue follow-up.\n':'')+'Thank you.'}
+function alertsCard(){
+  const m=me(),t=today();if(!m)return '';
+  if(S.aiSt===undefined&&!KNet.demo){S.aiSt=null;KNet.api('GET','/api/ai-status').then(r=>{S.aiSt=r;dirty()}).catch(()=>{S.aiSt={enabled:false}})}
+  const ask=KNet.demo?'':'<button class="btn sec" data-a="ai-open">Ask K-Fit AI</button>';
+  let h;
+  if(isMgr()){
+    const rows=Object.values(S.staff).filter(x=>x.active&&x.role!=='owner').map(x=>({x,k:missingFor(x)})).filter(r=>r.k.h.length||r.k.l.length);
+    const nobody=Object.values(S.hot).filter(x=>x.status==='open'&&!x.by).length;
+    h='<h3>Missing updates</h3>'+(rows.length||nobody?rows.map(r=>'<div class="row between small" style="gap:8px"><span><b>'+esc(r.x.name)+'</b><br><span class="muted">'+(r.k.h.length?'Hot list '+r.k.h.length+' late':'')+(r.k.h.length&&r.k.l.length?' · ':'')+(r.k.l.length?r.k.l.length+' leads overdue':'')+'</span></span><button class="chip" data-a="ai-remind" data-v="'+esc(r.x.id)+'">Copy reminder</button></div>').join('')+(nobody?'<div class="small late">'+nobody+' Hot list item'+(nobody>1?'s have':' has')+' nobody assigned</div>':''):'<div class="muted small">Nothing is missing. Everyone is up to date.</div>');
+  }else{
+    const k=missingFor(m);
+    h='<h3>Needs your update</h3>'+(k.h.length||k.l.length?(k.h.length?'<div class="small late">Hot list: '+k.h.length+' item'+(k.h.length>1?'s':'')+' not updated ('+k.h.slice(0,3).map(x=>esc(x.name)).join(', ')+')</div><button class="chip" data-a="hot-late">Open them</button>':'')+(k.l.length?'<div class="small">Leads with overdue follow-up: <b>'+k.l.length+'</b></div>':''):'<div class="muted small">You are up to date.</div>');
+  }
+  return '<div class="card stack">'+h+ask+'</div>';
+}
+function sheetAi(s){
+  const msgs=s.msgs||[];
+  return sheetHd('Ask K-Fit AI','<div class="muted small">It reads your Hot list, leads and renewals. It never changes anything until you tap Confirm.</div>')
+   +'<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0;padding:0">'+AIQ.map((q,i)=>'<button class="chip" data-a="ai-q" data-v="'+i+'">'+esc(q)+'</button>').join('')+'</div>'
+   +'<div class="stack">'+msgs.map((m,i)=>m.role==='user'?'<div class="card small" style="margin-left:24px"><b>'+esc(m.content)+'</b></div>':'<div class="card stack"><div style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(m.content)+'</div>'+(m.actions||[]).map((a,j)=>'<div class="row between small" style="gap:8px"><span style="overflow-wrap:anywhere">'+esc(a.label)+'</span>'+(a.applied?'<span class="pill p-won">Done</span>':'<button class="chip" data-a="ai-apply" data-v="'+i+':'+j+'">Confirm</button>')+'</div>').join('')+'</div>').join('')
+   +(s.busy?'<div class="muted small">Thinking… (can take up to 30 seconds)</div>':'')+(s.err?'<div class="late small" role="alert">'+esc(s.err)+'</div>':'')+'</div>'
+   +'<label class="f">Your question<textarea id="ai-in" data-in="ai-in" placeholder="e.g. Move Rohit\'s visit to tomorrow 9 PM">'+esc((s.d||{}).q||'')+'</textarea></label><button class="btn" data-a="ai-send" '+(s.busy?'disabled':'')+'>Ask</button>';
+}
+async function applyAi(a){
+  const m=me(),now=Date.now(),sys=t=>({by:m.id,ts:now,text:t,sys:true});
+  const x=a.id&&S.hot[a.id],l=a.id&&S.leads[a.id];
+  if(a.do==='move_hot'){if(!x||x.status!=='open'){toast('That item is no longer open');return false}
+    return guard(()=>S.db.doc('hot/'+x.id).update({when:a.when,time:a.time||x.time||'',notes:(x.notes||[]).concat([sys('Moved from '+fd(x.when)+(x.time?' '+x.time:'')+' to '+fd(a.when)+(a.time?' '+a.time:'')+' (AI, confirmed)')]).slice(-60),updatedAt:now}))}
+  if(a.do==='close_hot'){if(!x||x.status!=='open'){toast('That item is no longer open');return false}return hotClose(a.status,x,'',true)}
+  if(a.do==='note_hot'){if(!x){toast('Item not found');return false}return guard(()=>S.db.doc('hot/'+x.id).update({notes:(x.notes||[]).concat([{by:m.id,ts:now,text:a.text}]).slice(-60),updatedAt:now}))}
+  if(a.do==='lead_next'){if(!l){toast('Lead not found');return false}return guard(()=>S.db.doc('leads/'+l.id).update({next:a.next,hist:(l.hist||[]).concat([stamp(null,'Follow-up set to '+fd(a.next)+' (AI, confirmed)')])}))}
+  if(a.do==='note_lead'){if(!l){toast('Lead not found');return false}return guard(()=>S.db.doc('leads/'+l.id).update({hist:(l.hist||[]).concat([stamp(null,a.text)]),lastTouch:now,lastBy:m.name}))}
+  if(a.do==='add_hot'){const id=newId('H');return guard(()=>S.db.doc('hot/'+id).set({id,type:a.type,name:a.name,phone:'',refType:'',refId:'',when:a.when,time:a.time||'',detail:a.detail||'',amount:0,by:m.id,status:'open',createdBy:m.id,createdAt:now,updatedAt:now,notes:[]}))}
+  return false;
 }
 
 /* ---------- writes ---------- */
@@ -620,7 +793,7 @@ document.addEventListener('click',async e=>{
    case'login-pick':S.loginPick=v;renderLogin();setTimeout(()=>{const p=$('#pin');p&&p.focus()},50);break;
    case'login-back':S.loginPick=null;renderLogin();break;
    case'login-submit':{const pin=($('#pin').value||'').trim();b.disabled=true;try{const m=await KNet.login(S.loginPick,pin);S.me=m.id;S.staff[m.id]=m;S.loginPick=null;S.tab=null;startSync();render()}catch(err){const pe=$('#pinerr');if(pe)pe.textContent=err.status===429?'Too many wrong PINs. Wait 10 minutes.':err.status===0?'No internet. Try again.':'Wrong PIN. Try again.';const pi=$('#pin');if(pi){pi.value='';pi.focus()}b.disabled=false}break}
-   case'logout':KNet.logout();synced=false;S.me=null;S.tab=null;S.leads={};S.ren={};S.acts=[];S.ready={staff:1};S.sheet=null;try{$('#layer').innerHTML=''}catch(_){}KNet.staffList().then(l=>{S.staff={};l.forEach(s=>S.staff[s.id]=s);render()}).catch(()=>{});render();break;
+   case'logout':KNet.logout();synced=false;S.me=null;S.tab=null;S.leads={};S.ren={};S.hot={};S.acts=[];S.ready={staff:1};S.sheet=null;try{$('#layer').innerHTML=''}catch(_){}KNet.staffList().then(l=>{S.staff={};l.forEach(s=>S.staff[s.id]=s);render()}).catch(()=>{});render();break;
    case'tab':S.tab=v;S.lim=40;S.rlim=40;render();window.scrollTo(0,0);break;
    case'go-leads':S.tab='leads';S.lf=v;S.mine=true;render();break;
    case'go-ren':S.tab='ren';S.rf='week';render();break;
@@ -649,6 +822,32 @@ document.addEventListener('click',async e=>{
    case'save-targets':saveTargets();break;
    case'sheet-sync':{b.disabled=true;b.textContent='Copying…';try{S.sheetSt=await KNet.api('POST','/api/sheet-sync');toast(S.sheetSt.last&&S.sheetSt.last.ok?'Copied to Google Sheet':'Copy failed')}catch(e){toast(e.message||'Copy failed')}renderMain();break}
    case'install':{const ev=S.installEv;S.installEv=null;if(ev){ev.prompt();try{await ev.userChoice}catch(_){}}renderMain();break}
+   case'hf':S.hf=v;renderMain();break;
+   case'ht':S.ht=S.ht===v?'':v;renderMain();break;
+   case'open-hot':{const x=S.hot[v];if(x)openSheet({type:'hot',id:v,d:{note:'',move:'',err:'',e:{type:x.type,name:x.name||'',phone:x.phone||'',detail:x.detail||'',amount:x.amount||'',time:x.time||'',by:x.by||S.me}}});break}
+   case'newhot':openSheet({type:'newhot',d:{type:'',name:'',phone:'',refType:'',refId:'',when:today(),time:'',detail:'',amount:'',by:S.me,note:'',err:''}});break;
+   case'hot-from':{const [k,id]=v.split(':');const r=k==='lead'?S.leads[id]:S.ren[id];if(r)openSheet({type:'newhot',d:{type:'',name:r.name||'',phone:r.phone||'',refType:k,refId:id,when:today(),time:'',detail:'',amount:'',by:S.me,note:'',err:''}});break}
+   case'h-type':sh.d.type=v;sh.refresh=true;renderSheet();break;
+   case'h-when':sh.d.when=v;sh.refresh=true;renderSheet();break;
+   case'h-move':sh.d.move=v;sh.refresh=true;renderSheet();break;
+   case'h-pick':{const [k,id]=v.split(':');const r=k==='lead'?S.leads[id]:S.ren[id];if(r){sh.d.refType=k;sh.d.refId=id;sh.d.name=r.name||'';sh.d.phone=r.phone||'';sh.refresh=true;renderSheet()}break}
+   case'h-unlink':sh.d.refType='';sh.d.refId='';sh.refresh=true;renderSheet();break;
+   case'save-hot':b.disabled=true;await saveHot();b.disabled=false;break;
+   case'ai-open':openSheet({type:'ai',d:{},msgs:[]});break;
+   case'hot-late':S.tab='hot';S.hf='late';S.hmine=true;S.ht='';render();break;
+   case'ai-remind':{const st=S.staff[v];if(st)try{await navigator.clipboard.writeText(remindText(st));toast('Reminder copied. Paste it in WhatsApp')}catch(_){toast('Could not copy')}break}
+   case'ai-send':case'ai-q':{if(!sh||sh.type!=='ai'||sh.busy)break;const q=a==='ai-q'?AIQ[+v]:(sh.d.q||'').trim();if(!q)break;sh.msgs.push({role:'user',content:q});sh.d.q='';sh.busy=true;sh.err='';sh.refresh=true;renderSheet();
+     try{const r=await KNet.api('POST','/api/ai',{messages:sh.msgs.map(m=>({role:m.role,content:m.content}))});sh.msgs.push({role:'assistant',content:r.reply,actions:r.actions||[]})}catch(e){sh.err=e.message||'The AI did not answer';sh.msgs.pop()}
+     sh.busy=false;sh.refresh=true;if(S.sheet===sh)renderSheet();break}
+   case'ai-apply':{const [i,j]=v.split(':').map(Number),act=sh.msgs[i].actions[j];b.disabled=true;if(await applyAi(act)){act.applied=true;toast('Done')}sh.refresh=true;if(S.sheet===sh)renderSheet();break}
+   case'hot-done':b.disabled=true;await hotClose('done');b.disabled=false;break;
+   case'hot-missed':b.disabled=true;await hotClose('missed');b.disabled=false;break;
+   case'hot-cancel':if(b.dataset.armed){await hotClose('cancelled')}else{b.dataset.armed='1';b.textContent='Tap again to cancel';setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='Cancel this item'}},2500)}break;
+   case'hot-reopen':{const x=S.hot[sh.id];if(await guard(()=>S.db.doc('hot/'+x.id).update({status:'open',closedAt:null,closedBy:'',notes:(x.notes||[]).concat([{by:S.me,ts:Date.now(),text:'Reopened',sys:true}]).slice(-60),updatedAt:Date.now()}))){sh.refresh=true;renderSheet()}break}
+   case'hot-note':{const tx=(sh.d.note||'').trim();if(!tx){toast('Write a note first');break}b.disabled=true;const x=S.hot[sh.id];if(await guard(()=>S.db.doc('hot/'+x.id).update({notes:(x.notes||[]).concat([{by:S.me,ts:Date.now(),text:tx}]).slice(-60),updatedAt:Date.now()}))){sh.d.note='';sh.refresh=true;renderSheet();toast('Note saved')}b.disabled=false;break}
+   case'hot-move':{if(!sh.d.move||sh.d.move<today()){toast('Choose a new date first');break}b.disabled=true;const x=S.hot[sh.id];if(await guard(()=>S.db.doc('hot/'+x.id).update({when:sh.d.move,notes:(x.notes||[]).concat([{by:S.me,ts:Date.now(),text:'Moved from '+fd(x.when)+' to '+fd(sh.d.move),sys:true}]).slice(-60),updatedAt:Date.now()}))){toast('Moved to '+fd(sh.d.move));closeSheet()}b.disabled=false;break}
+   case'hot-type':sh.d.e.type=v;sh.refresh=true;renderSheet();break;
+   case'hot-edit':{const e=sh.d.e,x=S.hot[sh.id];const er=m=>{sh.d.err=m;$('#n-err').textContent=m};if(!(e.name||'').trim())return er('Name cannot be empty.');if(e.phone&&!/^\d{10}$/.test(e.phone))return er('Phone must be 10 digits.');b.disabled=true;if(await guard(()=>S.db.doc('hot/'+x.id).update({type:e.type,name:e.name.trim(),phone:e.phone||'',detail:(e.detail||'').trim(),amount:e.amount?Number(e.amount):0,time:(e.time||'').trim(),by:e.by||x.by,updatedAt:Date.now()}))){toast('Saved');closeSheet()}b.disabled=false;break}
    case'quick':quick(v);break;
    case'copy-text':try{await navigator.clipboard.writeText(REPLIES[+v].a);toast('Message copied')}catch(_){toast('Select the text and copy')}break;
    case'rng':S.rng=+v;renderMain();break;
@@ -676,6 +875,15 @@ document.addEventListener('input',e=>{
   else if(k==='s-name')sh.d.name=t.value;
   else if(k==='s-pin'){t.value=t.value.replace(/\D/g,'');sh.d.pin=t.value}
   else if(k==='s-active')sh.d.active=t.checked;
+  else if(k==='hmine'){S.hmine=t.checked;renderMain()}
+  else if(k==='h-q')hotSearch(t.value);
+  else if(k==='ai-in')sh.d.q=t.value;
+  else if(k==='h-whendate')sh.d.when=t.value;
+  else if(k==='h-movedate')sh.d.move=t.value;
+  else if(k==='h-time')sh.d.time=t.value;
+  else if(k==='h-detail')sh.d.detail=t.value;
+  else if(k==='h-amt')sh.d.amount=t.value;
+  else if(k==='h-by')sh.d.by=t.value;
 });
 document.addEventListener('change',e=>{const t=e.target;if(t.id==='imp-file'&&t.files&&t.files[0]){readImportFile(t.files[0]);t.value=''}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='pin')document.querySelector('[data-a="login-submit"]').click();if(e.key==='Escape'&&S.sheet)closeSheet()});
@@ -688,6 +896,7 @@ function startSync(){
     S.db.collection('staff').onSnapshot(s=>{S.staff=map(s);S.ready.staff=1;dirty()});
     S.db.collection('leads').onSnapshot(s=>{S.leads=map(s);S.ready.leads=1;dirty()});
     S.db.collection('renewals').onSnapshot(s=>{S.ren=map(s);S.ready.ren=1;dirty()});
+    S.db.collection('hot').onSnapshot(s=>{S.hot=map(s);S.ready.hot=1;dirty()});
     S.db.collection('activity').where('date','>=',addDays(today(),-31)).onSnapshot(s=>{S.acts=s.docs.map(d=>d.data());S.ready.acts=1;dirty()});
     S.db.doc('config/targets').onSnapshot(s=>{S.targets=Object.assign({},DEF_T,s.exists?s.data():{});dirty()});
   }

@@ -8,6 +8,16 @@ All screens are the ones you designed. What changed: it now has its own small se
 Phones (installed app)  <──internet──>  server.js  ──>  data/db.json  (one file = all your data)
 ```
 
+## The Hot list
+
+A tab called **Hot list** that everyone sees (receptionists, trainers, manager, owner). It is the team's shared "who is expected" board:
+- **What you can add:** someone **visiting**, **joining**, **paying** on a link, **bringing friends**, **upgrading** a plan (for example 6 to 12 months), **freezing** a membership, or anything else.
+- **Each item has** the person, the day (and time), details, an amount, and who is handling it. You can link it to a lead or a membership record, and the lead's own screen shows what is expected from that person.
+- **Notes:** anyone can add notes, so the whole team knows what was said. Every note shows who wrote it and when.
+- **Closing it:** after the day, someone taps Yes or No. A "Yes" on a **visit** adds one walk-in to that person's count. A "Yes" on **joining** a linked lead marks the lead as Membership Sold. "Update needed" lists items whose day has passed without an answer.
+- **Move** an item to another day, or **send a WhatsApp reminder** with a ready message.
+- **Where you see it:** the Today screen (staff) and Team screen (managers) show what is expected today. Reports has a Hot list results table (expected, happened, did not happen, rate) per type and per person. The Google Sheet copy gets a **Hot list** tab.
+
 ## 1. Try it on your computer (2 minutes)
 
 Install Node 18 or newer from nodejs.org, then in this folder:

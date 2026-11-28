@@ -53,8 +53,8 @@
   };
 
   /* local copy of the data, kept fresh by asking the server for changes */
-  const COLS = ['staff', 'leads', 'renewals', 'activity', 'config'];
-  const fresh = () => ({ staff: {}, leads: {}, renewals: {}, activity: {}, config: {} });
+  const COLS = ['staff', 'leads', 'renewals', 'activity', 'hot', 'config'];
+  const fresh = () => ({ staff: {}, leads: {}, renewals: {}, activity: {}, hot: {}, config: {} });
   let cache = fresh(), rev = 0, timer = null, running = false, pulling = false;
   const subs = []; // {col, id?, where, cb}
 

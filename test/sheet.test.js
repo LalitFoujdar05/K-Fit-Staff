@@ -11,8 +11,8 @@ const mock = http.createServer((q, r) => { let b = ''; q.on('data', c => b += c)
   try {
     let s = spawn('node', [path.join(__dirname, '..', 'server.js')], { env: env('pw') }); s.stderr.on('data', d => process.stderr.write(d));
     await wait(2500); // first copy happens by itself after start
-    assert.ok(got, 'first copy sent'); assert.deepStrictEqual(got.sheets.map(x => x.name), ['Daily summary', 'Activity log', 'Leads', 'Renewals']);
-    assert.ok(got.sheets[2].rows.length > 1000 && got.sheets[2].rows[0][0] === 'Lead ID');
+    assert.ok(got, 'first copy sent'); assert.deepStrictEqual(got.sheets.map(x => x.name), ['Daily summary', 'Hot list', 'Activity log', 'Leads', 'Renewals']);
+    assert.ok(got.sheets[3].rows.length > 1000 && got.sheets[3].rows[0][0] === 'Lead ID');
     assert.ok(!JSON.stringify(got).includes('pinHash') && !/\"pin\"/.test(JSON.stringify(got)), 'no PINs in the copy');
     const ow = (await call('POST', '/api/login', { id: 's_owner', pin: '1111' })).j.token;
     const rc = (await call('POST', '/api/login', { id: 's_harsha', pin: '3001' })).j.token;
@@ -20,7 +20,9 @@ const mock = http.createServer((q, r) => { let b = ''; q.on('data', c => b += c)
     await call('PUT', '/api/doc/activity/t1', { id: 't1', ts: Date.now(), date: new Date(Date.now() + 33e5).toISOString().slice(0, 10), staff: 's_harsha', kind: 'call', outcome: 'Connected', refName: 'Test Person', toStatus: 'Membership Sold' }, rc);
     const before = hits; const r = await call('POST', '/api/sheet-sync', {}, ow); assert.strictEqual(r.s, 200); assert.ok(r.j.last.ok, JSON.stringify(r.j)); assert.ok(hits > before);
     const daily = got.sheets[0].rows; assert.ok(daily.some(x => x[1] === 'Ms Harsha' && x[3] === 1 && x[4] === 1 && x[9] === 1), JSON.stringify(daily.slice(0, 3)));
-    assert.ok(got.sheets[1].rows.some(x => x[6] === 'Test Person'));
+    assert.ok(got.sheets[2].rows.some(x => x[6] === 'Test Person'));
+    await call('PUT', '/api/doc/hot/h9', { id: 'h9', type: 'upgrade', name: 'Hot Person', phone: '9999999999', when: '2026-12-01', detail: '6m to 12m', amount: 12000, by: 's_harsha', status: 'open', createdBy: 's_harsha', createdAt: Date.now(), notes: [{ by: 's_harsha', ts: Date.now(), text: 'Will pay Friday' }] }, rc);
+    await call('POST', '/api/sheet-sync', {}, ow); const hr = got.sheets[1].rows.find(x => x[4] === 'Hot Person'); assert.ok(hr && hr[2] === 'Plan upgrade' && hr[7] === 'Ms Harsha' && /Will pay Friday/.test(hr[9]), JSON.stringify(hr));
     assert.strictEqual((await call('GET', '/api/sheet-status', null, ow)).j.enabled, true);
     s.kill('SIGTERM'); await wait(400);
     s = spawn('node', [path.join(__dirname, '..', 'server.js')], { env: Object.assign(env('bad'), { DATA_DIR: '/tmp/sheet-x' + port }) }); await wait(2500);

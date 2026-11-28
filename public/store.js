@@ -3,17 +3,18 @@
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.KStore = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
-  const COLS = ['staff', 'leads', 'renewals', 'activity', 'config'];
+  const COLS = ['staff', 'leads', 'renewals', 'activity', 'hot', 'config'];
   const ROLES = ['owner', 'manager', 'receptionist', 'trainer'];
   const ACT_DAYS = 35; // how much activity a phone downloads
 
   class HttpError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
-  const emptyDb = () => ({ rev: 0, d: { staff: {}, leads: {}, renewals: {}, activity: {}, config: {} }, del: [] });
+  const emptyDb = () => ({ rev: 0, d: { staff: {}, leads: {}, renewals: {}, activity: {}, hot: {}, config: {} }, del: [] });
   const isMgr = u => u && (u.role === 'owner' || u.role === 'manager');
 
   function create(db, opt) {
     opt = Object.assign({ save() {}, hash: p => p, check: (p, h) => p === h, now: () => Date.now(), tz: 330 }, opt || {});
     const fails = {};
+    COLS.forEach(c => { if (!db.d[c]) db.d[c] = {}; }); // older saved data may not have every collection
     const ymd = ts => new Date(ts + opt.tz * 6e4).toISOString().slice(0, 10);
     const clean = d => { if (!d) return d; const o = Object.assign({}, d); delete o.pinHash; return o; };
 
@@ -66,7 +67,7 @@
         else if (mode === 'update') { if (!isMgr(user)) throw new HttpError(403, 'Not allowed'); }
         else if (!isMgr(user) && data.staff !== user.id) throw new HttpError(403, 'You can only log your own work');
       }
-      if ((c === 'leads' || c === 'renewals') && mode === 'delete' && !isMgr(user)) throw new HttpError(403, 'Managers only');
+      if ((c === 'leads' || c === 'renewals' || c === 'hot') && mode === 'delete' && !isMgr(user)) throw new HttpError(403, 'Managers only');
       if (data && JSON.stringify(data).length > 20000) throw new HttpError(413, 'Too large');
     }
     function write(user, mode, c, id, data) {
@@ -113,6 +114,7 @@
       (s.leads || []).forEach(x => { x._rev = ++db.rev; db.d.leads[x.id] = x; });
       (s.renewals || []).forEach(x => { x._rev = ++db.rev; db.d.renewals[x.id] = x; });
       (s.activity || []).forEach(x => { x._rev = ++db.rev; db.d.activity[x.id] = x; });
+      (s.hot || []).forEach(x => { x._rev = ++db.rev; db.d.hot[x.id] = x; });
       if (s.targets) { db.d.config.targets = Object.assign({ id: 'targets', _rev: ++db.rev }, s.targets); }
       opt.save(); return true;
     }
